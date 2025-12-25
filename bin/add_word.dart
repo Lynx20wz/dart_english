@@ -1,22 +1,11 @@
 import 'dart:io';
 
-import 'package:english/word.dart' show Word, WordPair;
+import 'package:english/ext.dart';
+import 'package:english/word.dart';
+import 'package:english/word_fille.dart';
 
 String wordsStorage =
     r'D:\programs\Obsidian\data\Мой камень\Обучения\Английский\Слова';
-
-extension StringExtension on String {
-  String capitalize() {
-    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
-  }
-
-  String removeSuffix(String suffix) {
-    if (endsWith(suffix)) {
-      return substring(0, length - suffix.length);
-    }
-    return this;
-  }
-}
 
 void addWord(
   String enWord,
