@@ -1,0 +1,58 @@
+import 'dart:io' show File;
+
+import 'package:html/dom.dart' show Document;
+import 'package:html/parser.dart';
+import 'package:http/http.dart' show get;
+import 'package:yandex_dictionary_api/yandex_dictionary_api.dart';
+
+final yandexDictKey = YandexDictionaryKey(
+  apiKey:
+      'dict.1.1.20251224T174354Z.ab9b47c46457f519.d375900a1f29c5615a2986d7c9afc4c8dc46ee24',
+);
+final yandexDictApi = YandexDictionaryApi(key: yandexDictKey);
+
+class WebParser {
+  static const _baseUrl = 'https://dictionary.cambridge.org';
+  final Future<Document> _document;
+
+  final String word;
+
+  WebParser(this.word)
+    : _document = get(
+        Uri.parse('$_baseUrl/dictionary/english/$word'),
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+        },
+      ).then((value) => parse(value.body));
+
+  Future<String?> getLevel() async =>
+      (await _document).querySelector('.epp-xref.dxref')?.text;
+
+  Future<String?> getTranscript() async {
+    final lookupRequest = YandexLookupRequest(lang: 'en-ru', text: word);
+
+    final response = await yandexDictApi.lookup(lookupRequest);
+    return response.def?.first.ts;
+  }
+
+  Future<bool> getPronunciation() async {
+    final audioFile = File(
+      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/$word.mp3',
+    );
+    final doc = await _document; // TODO remove later
+    final pronunciationUrl = (await _document)
+        .querySelectorAll('source[type="audio/mpeg"]')[1]
+        .attributes['src'];
+
+    if (pronunciationUrl != null) {
+      final audio = await get(
+        Uri.parse(_baseUrl + pronunciationUrl),
+      ).then((value) => value.bodyBytes.toList());
+      await audioFile.writeAsBytes(audio);
+      return true;
+    }
+
+    return false;
+  }
+}

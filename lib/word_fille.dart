@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:english/ext.dart';
+import 'package:path/path.dart' as p;
 
 import 'word.dart';
+import 'word_file_parser.dart';
 
 class WordFile {
   final File file;
@@ -27,9 +29,9 @@ class WordFile {
     'en_word': word.mainPair.enWord,
     'ru_word': word.mainPair.ruWord,
     'level': word.level,
+    'transcript': word.transcript,
     'en_example': word.enExample,
     'ru_example': word.ruExample,
-    'transcript': word.transcript,
     'organize': 'true',
   };
 
@@ -40,14 +42,14 @@ class WordFile {
 
   void write() {
     if (!file.existsSync()) {
-      print('File ${file.path} does not exist. It will be created');
+      print('File ${p.basename(file.path)} does not exist. It will be created');
     }
 
     file.writeAsStringSync(getMd());
   }
 
   String getMd() {
-    if (!isFull) throw Exception('File is not full');
+    // if (!isFull) throw Exception('File is not full');
 
     final buffer = StringBuffer();
 
