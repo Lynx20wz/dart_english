@@ -40,7 +40,7 @@ class WebParser {
     final audioFile = File(
       'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/$word.mp3',
     );
-    final doc = await _document; // TODO remove later
+
     final pronunciationUrl = (await _document)
         .querySelectorAll('source[type="audio/mpeg"]')[1]
         .attributes['src'];

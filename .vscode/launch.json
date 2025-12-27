@@ -5,10 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "english",
+      "name": "english with args",
       "request": "launch",
       "type": "dart",
       "args": ["knife", "нож", "knife is so sharp", "нож очень острый"]
+    },
+    {
+      "name": "english",
+      "request": "launch",
+      "type": "dart",
+      "console": "terminal"
     }
   ]
 }

@@ -53,8 +53,8 @@ class Word {
 
     final webParser = WebParser(mainPair.enWord);
 
+    hasPronunciation = await webParser.getPronunciation();
     level = await webParser.getLevel();
     transcript = await webParser.getTranscript();
-    hasPronunciation = await webParser.getPronunciation();
   }
 }
