@@ -5,10 +5,9 @@ import 'package:html/parser.dart';
 import 'package:http/http.dart' show get;
 import 'package:yandex_dictionary_api/yandex_dictionary_api.dart';
 
-final yandexDictKey = YandexDictionaryKey(
-  apiKey:
-      'dict.1.1.20251224T174354Z.ab9b47c46457f519.d375900a1f29c5615a2986d7c9afc4c8dc46ee24',
-);
+import 'config.dart' show Config;
+
+final yandexDictKey = YandexDictionaryKey(apiKey: Config.yandexApiKey);
 final yandexDictApi = YandexDictionaryApi(key: yandexDictKey);
 
 class WebParser {

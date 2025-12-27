@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:english/config.dart' show Config;
 import 'package:english/ext.dart';
 import 'package:english/word.dart';
 import 'package:english/word_file.dart';
 import 'package:path/path.dart' as p;
 
-final wordsStorage =
-    r'D:/programs/Obsidian/data/Мой камень/Обучения/Английский/Слова'; // TODO move to config
-
 void main(List<String> args) async {
+  Config.init();
   try {
     if (args.isEmpty || args.contains('--repl')) {
       await _replMode();
@@ -94,7 +93,7 @@ Future<void> addWord({
   String? ruExample,
   bool overwrite = false,
 }) async {
-  final path = File('$wordsStorage/$enWord.md');
+  final path = File('${Config.dictionaryPath}/$enWord.md');
 
   if (path.existsSync() && !overwrite) {
     throw FileSystemException('File ${p.basename(path.path)} already exists');
