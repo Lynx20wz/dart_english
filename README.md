@@ -1,2 +1,13 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+# CLI dictionary helper
+
+Helper for keeping English-Russian dictionary in Obsidian.
+
+## Features
+
+- CLI API for adding words
+- Interactive REPL mode
+
+## TODO
+
+- Add tests
+- GUI interface on Flutter
