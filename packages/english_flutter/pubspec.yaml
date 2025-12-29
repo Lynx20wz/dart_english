@@ -1,0 +1,15 @@
+name: english_flutter
+description: Flutter library for English-Russian dictionary.
+version: 0.0.1
+repository: https://github.com/Lynx20wz/dart_english
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.10.4
+dependencies:
+  english_core:
+    path: ../english_core
+  flutter:
+    sdk: flutter

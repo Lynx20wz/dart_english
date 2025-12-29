@@ -1,10 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:english/config.dart' show Config;
-import 'package:english/ext.dart';
-import 'package:english/word.dart';
-import 'package:english/word_file.dart';
+import 'package:english_core/english_core.dart';
 import 'package:path/path.dart' as p;
 
 void main(List<String> args) async {

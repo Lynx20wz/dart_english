@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:english/ext.dart';
 import 'package:path/path.dart' as p;
 
+import '../ext.dart';
+import '../parsers/file_parser.dart';
 import 'word.dart';
-import 'word_file_parser.dart';
 
 class WordFile {
   final File file;
   final Word word;
   final bool organize;
-  List<String> tags;
   late Map<String, String?> properties;
+  List<String> tags;
 
   WordFile(
     this.file,
@@ -20,12 +20,12 @@ class WordFile {
     this.tags = const ['Обучение', 'Английский', 'Слова'],
     Map<String, String>? properties,
   }) {
-    this.properties = properties ?? _setBaseProperties();
+    this.properties = properties ?? _getBaseProperties();
   }
 
-  factory WordFile.fromFile(File file) => WordFileParser(file).fileParse();
+  factory WordFile.fromFile(File file) => FileParser(file).fileParse();
 
-  Map<String, String?> _setBaseProperties() => {
+  Map<String, String?> _getBaseProperties() => {
     'en_word': word.mainPair.enWord,
     'ru_word': word.mainPair.ruWord,
     'level': word.level,

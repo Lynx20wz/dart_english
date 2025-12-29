@@ -1,21 +1,13 @@
 name: english
-description: A sample command-line application.
-version: 1.0.0
+description: Helper for keeping English-Russian dictionary in Obsidian.
+version: 0.0.1
 repository: https://github.com/Lynx20wz/dart_english
+publish_to: none
 
 environment:
   sdk: ^3.10.4
 
-dependencies:
-  path: ^1.9.1
-  http: ^1.6.0
-  html: ^0.15.6
-  yandex_dictionary_api: ^1.0.1
-  args: ^2.7.0
-  dotenv: ^4.2.0
-  flutter:
-    sdk: flutter
-
-dev_dependencies:
-  lints: ^6.0.0
-  test: ^1.25.6
+workspace:
+  - packages/english_core
+  - packages/english_cli
+  - packages/english_flutter

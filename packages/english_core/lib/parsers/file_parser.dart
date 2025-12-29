@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'word.dart';
-import 'word_file.dart';
+import '../classes/word.dart';
+import '../classes/word_file.dart';
 
-class WordFileParser {
+class FileParser {
   final File file;
   late final String content = file.existsSync() ? file.readAsStringSync() : '';
 
-  WordFileParser(this.file);
+  FileParser(this.file);
 
   WordFile fileParse() {
     final properties = _getProperties();

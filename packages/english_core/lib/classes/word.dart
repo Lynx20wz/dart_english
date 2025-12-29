@@ -1,4 +1,4 @@
-import 'web_parser.dart';
+import '../parsers/web_parser.dart';
 
 class WordPair {
   final String enWord, ruWord;

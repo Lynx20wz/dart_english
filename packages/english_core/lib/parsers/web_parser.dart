@@ -5,7 +5,7 @@ import 'package:html/parser.dart';
 import 'package:http/http.dart' show get;
 import 'package:yandex_dictionary_api/yandex_dictionary_api.dart';
 
-import 'config.dart' show Config;
+import '../classes/config.dart' show Config;
 
 final yandexDictKey = YandexDictionaryKey(apiKey: Config.yandexApiKey);
 final yandexDictApi = YandexDictionaryApi(key: yandexDictKey);
