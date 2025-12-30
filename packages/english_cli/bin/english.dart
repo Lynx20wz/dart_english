@@ -5,7 +5,6 @@ import 'package:english_core/english_core.dart';
 import 'package:path/path.dart' as p;
 
 void main(List<String> args) async {
-  Config.init();
   try {
     if (args.isEmpty || args.contains('--repl')) {
       await _replMode();

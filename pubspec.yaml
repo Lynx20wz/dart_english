@@ -11,3 +11,6 @@ workspace:
   - packages/english_core
   - packages/english_cli
   - packages/english_flutter
+
+dev_dependencies:
+  lints: ^6.0.0

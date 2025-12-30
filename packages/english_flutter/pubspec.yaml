@@ -6,10 +6,17 @@ publish_to: none
 
 resolution: workspace
 
+flutter:
+  uses-material-design: true # For icons on Windows
+
 environment:
   sdk: ^3.10.4
+  flutter: ^3.38.5
+
 dependencies:
   english_core:
     path: ../english_core
   flutter:
     sdk: flutter
+  flutter_riverpod: ^3.1.0
+  window_size: ^0.1.0
