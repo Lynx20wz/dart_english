@@ -1,3 +1,4 @@
+import 'package:english_flutter/widgets/back_fab.dart';
 import 'package:english_flutter/widgets/word.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +17,7 @@ class WordsListScreen extends ConsumerWidget {
         itemCount: words.length,
         itemBuilder: (context, index) => WordWidget(words[index]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Icon(Icons.arrow_back),
-      ),
+      floatingActionButton: BackFab(),
     );
   }
 }

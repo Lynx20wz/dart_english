@@ -13,6 +13,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setWindowMinSize(const Size(300, 300));
+    setWindowFrame(const Rect.fromLTWH(2100, 100, 400, 600));
+
     return MaterialApp(
       routes: {
         '/words': (context) => const WordsListScreen(),

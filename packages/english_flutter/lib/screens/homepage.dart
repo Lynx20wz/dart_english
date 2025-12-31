@@ -9,6 +9,7 @@ class HomePageScreen extends StatelessWidget {
       child: Column(
         spacing: 24,
         children: [
+          SizedBox(height: 10),
           Text(
             'English helper',
             style: Theme.of(context).textTheme.headlineLarge,
