@@ -7,7 +7,7 @@ import '../classes/word_file.dart';
 
 class FileParser {
   final File file;
-  late final String content = file.existsSync() ? file.readAsStringSync() : '';
+  late final String _content = file.existsSync() ? file.readAsStringSync() : '';
 
   FileParser(this.file);
 
@@ -24,20 +24,16 @@ class FileParser {
       );
     }
 
-    final List<String> tags = [
-      ...RegExp(
-        r'^#(\p{L}+)(?: #(\p{L}+))*',
-      ).allMatches(content).map((match) => match.group(1)!),
-    ];
+    final List<String> tags = _getTags();
     final (enExample, ruExample) = _getExample();
-    final hasPronunciation = _hasPronunciation();
+    final pronunciationAudio = _getPronunciationAudio();
 
     final word = Word(
       _getWordPairs(),
       enExample: enExample,
       ruExample: ruExample,
       irregularVerb: _getIrregularVerb(),
-      hasPronunciation: hasPronunciation,
+      pronunciationAudio: pronunciationAudio,
       transcript: _getTranscript(),
       level: tags[-1] != 'Слова' ? tags[-1] : '',
     );
@@ -46,7 +42,7 @@ class FileParser {
   }
 
   Map<String, String> _getProperties() {
-    final lines = _splitContentByLines(content);
+    final lines = _splitContentByLines(_content);
     final lastPropertyLineIndex = lines.lastIndexOf('---');
     if (lastPropertyLineIndex == -1) return {};
 
@@ -64,24 +60,30 @@ class FileParser {
             r'^`(.*?)(?: \[.*])?`(?:.*)?[-—] (?:\[\[)?(?:.*\|)?(.*[^]\n]?)(?:]])?',
             multiLine: true,
           )
-          .allMatches(content)
+          .allMatches(_content)
           .map((match) => WordPair(match.group(1)!, match.group(2)!))
           .toList();
 
   String? _getTranscript() =>
-      RegExp(r'^`.*?(?: \[(.*)])?`').firstMatch(content)?.group(1);
+      RegExp(r'^`.*?(?: \[(.*)])?`').firstMatch(_content)?.group(1);
+
+  List<String> _getTags() => [
+    ...RegExp(
+      r'^#(\p{L}+)(?: #(\p{L}+))*',
+    ).allMatches(_content).map((match) => match.group(1)!),
+  ];
 
   IrregularVerb? _getIrregularVerb() {
-    final result = RegExp(r'(.*) - (.*) - (.*)').firstMatch(content);
+    final result = RegExp(r'(.*) - (.*) - (.*)').firstMatch(_content);
     return result == null
         ? null
         : IrregularVerb(result[1]!, result[2]!, result[3]!);
   }
 
   (String, String) _getExample() {
-    final lines = _splitContentByLines(content);
+    final lines = _splitContentByLines(_content);
 
-    final ruMatch = RegExp(r'^\((.+)\)$').firstMatch(content);
+    final ruMatch = RegExp(r'^\((.+)\)$').firstMatch(_content);
     if (ruMatch == null) return ('', '');
 
     final ruExample = ruMatch.group(1)!;
@@ -90,7 +92,16 @@ class FileParser {
     return (lines[ruLineIndex - 1], ruExample);
   }
 
-  bool _hasPronunciation() => RegExp(r'!\[\[.+?\.mp3]]').hasMatch(content);
+  List<int> _getPronunciationAudio() {
+    final captures = RegExp(r'!\[\[(.+?)\.mp3]]').allMatches(_content).toList();
+    if (captures.isEmpty) return [];
+
+    final audioFile = File(
+      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/${captures.first.group(1)}.mp3',
+    );
+
+    return audioFile.existsSync() ? audioFile.readAsBytesSync() : [];
+  }
 
   String _removeLinks(String line) => line.replaceAllMapped(
     RegExp(r'\[\[(?:.*\|)?(.*?)]]'),

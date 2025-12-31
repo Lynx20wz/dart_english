@@ -102,5 +102,7 @@ Future<void> addWord({
   );
 
   await word.setInfoFromWeb();
+  word.savePronunciation();
+
   WordFile(path, word).write();
 }

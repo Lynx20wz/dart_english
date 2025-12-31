@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../parsers/web_parser.dart';
 
 class WordPair {
@@ -25,7 +27,7 @@ class Word {
   final String? enExample, ruExample;
   String? transcript, level;
   final IrregularVerb? irregularVerb;
-  bool hasPronunciation;
+  late final List<int>? pronunciationAudio;
 
   Word(
     List<WordPair> pairs, {
@@ -34,7 +36,7 @@ class Word {
     this.transcript,
     this.level,
     this.irregularVerb,
-    this.hasPronunciation = false,
+    this.pronunciationAudio,
   }) {
     mainPair = pairs[0];
     wordPairs = pairs.sublist(1);
@@ -46,15 +48,25 @@ class Word {
       ruExample != null &&
       level != null &&
       transcript != null &&
-      hasPronunciation;
+      pronunciationAudio != null;
 
   Future<void> setInfoFromWeb() async {
     if (isFull) return; // to avoid spamming the API
 
     final webParser = WebParser(mainPair.enWord);
 
-    hasPronunciation = await webParser.getPronunciation();
     level = await webParser.getLevel();
     transcript = await webParser.getTranscript();
+    pronunciationAudio = await webParser.getPronunciation();
+  }
+
+  void savePronunciation() {
+    if (pronunciationAudio == null) return;
+
+    final audioFile = File(
+      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/${mainPair.enWord}.mp3',
+    );
+
+    audioFile.writeAsBytes(pronunciationAudio!);
   }
 }

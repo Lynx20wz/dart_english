@@ -1,4 +1,4 @@
-import 'dart:io' show File;
+import 'dart:typed_data';
 
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart';
@@ -35,23 +35,17 @@ class WebParser {
     return response.def?.first.ts;
   }
 
-  Future<bool> getPronunciation() async {
-    final audioFile = File(
-      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/$word.mp3',
-    );
-
+  Future<Uint8List?> getPronunciation() async {
     final pronunciationUrl = (await _document)
         .querySelectorAll('source[type="audio/mpeg"]')[1]
         .attributes['src'];
 
     if (pronunciationUrl != null) {
-      final audio = await get(
+      return await get(
         Uri.parse(_baseUrl + pronunciationUrl),
-      ).then((value) => value.bodyBytes.toList());
-      await audioFile.writeAsBytes(audio);
-      return true;
+      ).then((value) => value.bodyBytes);
     }
 
-    return false;
+    return null;
   }
 }

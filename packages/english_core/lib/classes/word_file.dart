@@ -86,7 +86,7 @@ class WordFile {
     }
 
     // Pronunciation
-    if (word.hasPronunciation) {
+    if (word.pronunciationAudio != null) {
       buffer.writeln('![[${word.mainPair.enWord}.mp3]]');
     }
 
