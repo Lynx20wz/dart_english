@@ -1,3 +1,5 @@
+import 'dart:io' show Process;
+
 import 'package:flutter/material.dart';
 
 class HomePageScreen extends StatelessWidget {
@@ -5,38 +7,88 @@ class HomePageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: Center(
-      child: Column(
-        spacing: 24,
-        children: [
-          SizedBox(height: 10),
-          Text(
-            'English helper',
-            style: Theme.of(context).textTheme.headlineLarge,
-          ),
-          Column(
-            children: [
-              ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/words'),
-                child: const Text('Words', style: TextStyle(fontSize: 24)),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 50),
-                ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 400),
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                    child: Icon(
+                      Icons.language,
+                      size: 60,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 24),
+
+                  Text(
+                    'English helper',
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  SizedBox(height: 36),
+
+                  FilledButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/words'),
+                    icon: Icon(Icons.list, size: 28),
+                    label: Text(
+                      'Vocabulary list',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    style: FilledButton.styleFrom(
+                      minimumSize: Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  ElevatedButton.icon(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/pronunciation'),
+                    icon: Icon(Icons.audiotrack, size: 28),
+                    label: Text(
+                      'Get pronunciation',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/pronunciation'),
-                child: const Text(
-                  'Pronunciation',
-                  style: TextStyle(fontSize: 24),
-                ),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 50),
-                ),
-              ),
-            ],
+            ),
           ),
-        ],
-      ),
+        ),
+        IconButton(
+          tooltip: 'Open dictionary folder',
+          onPressed: () => Process.run('explorer', [
+            r'D:\programs\Obsidian\data\Мой камень\Обучения\Английский\Слова',
+          ]),
+          icon: Icon(
+            Icons.folder,
+            color: Theme.of(context).colorScheme.primary,
+            size: 28,
+          ),
+          hoverColor: Colors.transparent,
+        ),
+      ],
     ),
   );
 }
