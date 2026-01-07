@@ -1,25 +1,26 @@
 import 'dart:typed_data';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:english_core/english_core.dart';
+import 'package:english_flutter/provider.dart';
 import 'package:english_flutter/widgets/back_fab.dart';
+import 'package:english_flutter/widgets/pronunciation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PronunciationScreen extends StatefulWidget {
+class PronunciationScreen extends ConsumerStatefulWidget {
   const PronunciationScreen({super.key});
 
   @override
-  State<PronunciationScreen> createState() => _PronunciationScreenState();
+  ConsumerState<PronunciationScreen> createState() =>
+      _PronunciationScreenState();
 }
 
-class _PronunciationScreenState extends State<PronunciationScreen> {
+class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   late final TextEditingController _wordController;
   late final FocusNode _focusNode;
-  late final AudioPlayer _player;
-  String? _foundTranscript;
+  String? _transcript;
   Uint8List? _pronunciation;
   bool _isLoading = false;
-  bool _isPlaying = false;
   bool _isFocused = false;
 
   @override
@@ -27,16 +28,9 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
     super.initState();
     _wordController = TextEditingController();
     _focusNode = FocusNode();
-    _player = AudioPlayer();
 
     _focusNode.addListener(() {
       setState(() => _isFocused = _focusNode.hasFocus);
-    });
-
-    _player.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() => _isPlaying = state == PlayerState.playing);
-      }
     });
   }
 
@@ -44,7 +38,6 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
   void dispose() {
     _wordController.dispose();
     _focusNode.dispose();
-    _player.dispose();
     super.dispose();
   }
 
@@ -54,7 +47,7 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
 
     setState(() {
       _isLoading = true;
-      _foundTranscript = null;
+      _transcript = null;
       _pronunciation = null;
     });
 
@@ -65,7 +58,7 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
 
       if (mounted) {
         setState(() {
-          _foundTranscript = transcript;
+          _transcript = transcript;
           _pronunciation = pronunciation;
         });
       }
@@ -79,35 +72,14 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Future<void> _playPronunciation() async {
-    if (_pronunciation == null || _pronunciation!.isEmpty) return;
-
-    try {
-      if (_isPlaying) {
-        await _player.pause();
-        return;
-      }
-
-      await _player.stop();
-      await _player.play(BytesSource(_pronunciation!));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Playback error: $e')));
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final pinnedCards = ref.watch(pinnedCardsProvider);
 
     return Scaffold(
       floatingActionButton: const BackFab(),
@@ -127,9 +99,20 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
               _buildWordField(theme),
               const SizedBox(height: 16),
 
-              if (_foundTranscript != null) _buildResultCard(theme),
+              Column(
+                children: [
+                  if (_transcript != null)
+                    PronunciationCard(
+                      _transcript!,
+                      pronunciation: _pronunciation!,
+                    ),
 
-              const Spacer(),
+                  if (pinnedCards.isNotEmpty)
+                    ...pinnedCards
+                        .where((card) => card.transcription != _transcript)
+                        .map(_buildPinnedCard),
+                ],
+              ),
             ],
           ),
         ),
@@ -177,10 +160,7 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
                 color: theme.colorScheme.onSurface,
               ),
               cursorColor: theme.colorScheme.primary,
-              onSubmitted: (_) async {
-                await _searchTranscript();
-                await _playPronunciation();
-              },
+              onSubmitted: (_) async => await _searchTranscript(),
             ),
           ),
           SizedBox(
@@ -204,45 +184,8 @@ class _PronunciationScreenState extends State<PronunciationScreen> {
     ),
   );
 
-  Widget _buildResultCard(ThemeData theme) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: theme.colorScheme.primary.withValues(alpha: 0.3),
-      ),
-      color: theme.colorScheme.surfaceContainerHighest,
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: _playPronunciation,
-          icon: _isPlaying
-              ? const Icon(Icons.pause, size: 20)
-              : const Icon(Icons.play_arrow, size: 20),
-          color: theme.colorScheme.onPrimary,
-          style: IconButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            _foundTranscript!,
-            style: TextStyle(
-              fontSize: 24,
-              fontFamily: 'IPA',
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-        ),
-      ],
-    ),
+  Widget _buildPinnedCard(PronunciationCard card) => Padding(
+    padding: const EdgeInsets.only(top: 10),
+    child: card.copyWith(isPinned: true, autoplay: false),
   );
 }

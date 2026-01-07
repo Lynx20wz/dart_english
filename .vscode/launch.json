@@ -1,20 +1,18 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "english with args",
-      "request": "launch",
+      "name": "CLI",
       "type": "dart",
-      "args": ["knife", "нож", "knife is so sharp", "нож очень острый"]
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/english_cli/bin/english.dart",
+      "console": "terminal"
     },
     {
-      "name": "english",
-      "request": "launch",
+      "name": "Flutter",
       "type": "dart",
-      "console": "terminal"
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/english_flutter"
     }
   ]
 }

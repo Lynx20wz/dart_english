@@ -22,11 +22,11 @@ class IrregularVerb {
 }
 
 class Word {
-  late final List<WordPair> wordPairs;
-  late final WordPair mainPair;
-  final String? enExample, ruExample;
-  String? transcript, level;
+  final WordPair mainPair;
+  final List<WordPair> wordPairs;
+  String? enExample, ruExample;
   final IrregularVerb? irregularVerb;
+  late final String? transcript, level;
   late final List<int>? pronunciationAudio;
 
   Word(
@@ -37,18 +37,14 @@ class Word {
     this.level,
     this.irregularVerb,
     this.pronunciationAudio,
-  }) {
-    mainPair = pairs[0];
-    wordPairs = pairs.sublist(1);
-  }
+  }) : mainPair = pairs[0],
+       wordPairs = pairs.sublist(1);
 
-  bool get isFull =>
-      mainPair.isFull &&
-      enExample != null &&
-      ruExample != null &&
-      level != null &&
-      transcript != null &&
-      pronunciationAudio != null;
+  static Future<Word> fromWeb(WordPair pair) async {
+    final word = Word([pair]);
+    await word.setInfoFromWeb();
+    return word;
+  }
 
   Future<void> setInfoFromWeb() async {
     if (isFull) return; // to avoid spamming the API
@@ -59,6 +55,14 @@ class Word {
     transcript = await webParser.getTranscript();
     pronunciationAudio = await webParser.getPronunciation();
   }
+
+  bool get isFull =>
+      mainPair.isFull &&
+      enExample != null &&
+      ruExample != null &&
+      level != null &&
+      transcript != null &&
+      pronunciationAudio != null;
 
   void savePronunciation() {
     if (pronunciationAudio == null) return;

@@ -4,6 +4,9 @@ version: 0.0.1
 repository: https://github.com/Lynx20wz/dart_english
 publish_to: none
 
+executables:
+  english: "packages/english_cli/bin/english.dart"
+
 environment:
   sdk: ^3.10.4
 
