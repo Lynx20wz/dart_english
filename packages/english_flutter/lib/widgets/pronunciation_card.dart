@@ -24,7 +24,6 @@ class PronunciationCard extends ConsumerStatefulWidget {
     String? transcription,
     Uint8List? pronunciation,
     bool? autoplay,
-    bool? isPinned,
     void Function(PronunciationCard card)? onPinned,
   }) => PronunciationCard(
     transcription ?? _transcription,
@@ -129,7 +128,7 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
             const Spacer(),
             IconButton(
               onPressed: () =>
-                  ref.read(pinnedCardsProvider.notifier).toggle(widget),
+                  ref.read(pinnedCardsProvider.notifier).remove(widget),
               icon: const Icon(Icons.push_pin, size: 20),
               color: isPinned
                   ? theme.colorScheme.primary

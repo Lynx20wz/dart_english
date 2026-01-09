@@ -1,5 +1,5 @@
 import 'package:english_flutter/widgets/back_fab.dart';
-import 'package:english_flutter/widgets/word.dart';
+import 'package:english_flutter/widgets/word_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

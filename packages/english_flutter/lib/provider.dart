@@ -1,5 +1,5 @@
 import 'package:english_core/english_core.dart' show Word, DictParser;
-import 'package:english_flutter/widgets/pronunciation.dart';
+import 'package:english_flutter/widgets/pronunciation_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final wordsProvider = Provider<List<Word>>((_) => DictParser().parseAllWords());

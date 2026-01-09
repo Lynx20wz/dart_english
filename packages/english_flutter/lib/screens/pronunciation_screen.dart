@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:english_core/english_core.dart';
 import 'package:english_flutter/provider.dart';
 import 'package:english_flutter/widgets/back_fab.dart';
-import 'package:english_flutter/widgets/pronunciation.dart';
+import 'package:english_flutter/widgets/pronunciation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,18 +20,15 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   late final FocusNode _focusNode;
   String? _transcript;
   Uint8List? _pronunciation;
+
   bool _isLoading = false;
-  bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
+
     _wordController = TextEditingController();
     _focusNode = FocusNode();
-
-    _focusNode.addListener(() {
-      setState(() => _isFocused = _focusNode.hasFocus);
-    });
   }
 
   @override
@@ -125,7 +122,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
       color: theme.colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       border: Border.all(
-        color: _isFocused
+        color: _focusNode.hasFocus
             ? theme.colorScheme.primary
             : theme.colorScheme.outline.withValues(alpha: 0.2),
         width: 1.5,
@@ -142,7 +139,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.text_fields,
-                  color: _isFocused
+                  color: _focusNode.hasFocus
                       ? theme.colorScheme.primary
                       : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   size: 24,
@@ -172,7 +169,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
                     onPressed: _searchTranscript,
                     icon: const Icon(Icons.search_rounded, size: 24),
                     style: IconButton.styleFrom(
-                      foregroundColor: _isFocused
+                      foregroundColor: _focusNode.hasFocus
                           ? theme.colorScheme.primary
                           : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       animationDuration: Duration.zero,
@@ -186,6 +183,6 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
 
   Widget _buildPinnedCard(PronunciationCard card) => Padding(
     padding: const EdgeInsets.only(top: 10),
-    child: card.copyWith(isPinned: true, autoplay: false),
+    child: card.copyWith(autoplay: false),
   );
 }
