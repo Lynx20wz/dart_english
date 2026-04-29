@@ -4,16 +4,13 @@ version: 0.0.1
 repository: https://github.com/Lynx20wz/dart_english
 publish_to: none
 
-executables:
-  english: "packages/english_cli/bin/english.dart"
-
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.10.0
 
 workspace:
   - packages/english_core
-  - packages/english_cli
   - packages/english_flutter
 
 dev_dependencies:
   lints: ^6.0.0
+  import_sorter: ^4.6.0

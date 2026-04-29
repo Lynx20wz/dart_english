@@ -1,0 +1,11 @@
+[
+  {
+    "label": "Flutter debug",
+    "adapter": "Dart",
+    "type": "flutter",
+    "program": "lib/main.dart",
+    "platform": "desktop",
+    "cwd": "$ZED_WORKTREE_ROOT/packages/english_flutter",
+    "args": ["--no-pub"],
+  },
+]

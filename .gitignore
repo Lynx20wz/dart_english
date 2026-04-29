@@ -1,6 +1,8 @@
 .dart_tool/
 build/
-windows/
 .idea/
 *.exe
 .env
+
+# FVM Version Cache
+.fvm/
