@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 
-final envFile = File('${Directory.current.parent.path}/english_core/.env');
+final envFile = File('${Platform.script.path}/../../.env');
 final env = DotEnv()..load([envFile.path]);
 
 class Config {

@@ -1,9 +1,8 @@
 import 'dart:io';
 
+import 'package:english_core/classes/classes.dart';
+import 'package:english_core/ext.dart';
 import 'package:path/path.dart' as p;
-
-import '../classes/word.dart';
-import '../classes/word_file.dart';
 
 class FileParser {
   final File file;
@@ -26,31 +25,33 @@ class FileParser {
 
     final List<String> tags = _getTags();
     final (enExample, ruExample) = _getExample();
-    final pronunciationAudio = _getPronunciationAudio();
 
     final word = Word(
       _getWordPairs(),
       enExample: enExample,
       ruExample: ruExample,
       irregularVerb: _getIrregularVerb(),
-      pronunciationAudio: pronunciationAudio,
+      pronunciationAudio: _getPronunciationAudio(),
       transcript: _getTranscript(),
-      level: tags[-1] != 'Слова' ? tags[-1] : '',
+      level: tags.last != 'Слова' ? tags.last : '',
     );
 
     return WordFile(file, word, properties: properties, tags: tags);
   }
 
-  Map<String, String> _getProperties() {
+  Map<String, String?> _getProperties() {
     final lines = _splitContentByLines(_content);
     final lastPropertyLineIndex = lines.lastIndexOf('---');
     if (lastPropertyLineIndex == -1) return {};
 
     return Map.fromEntries(
-      RegExp(r'^(\S+):\s*(\S+)$')
-          .allMatches(lines.sublist(1, lastPropertyLineIndex + 1).join('\n'))
+      RegExp(r'^(\S+):\s*(.+)$', multiLine: true)
+          .allMatches(lines.sublist(1, lastPropertyLineIndex).join('\n'))
           .map(
-            (match) => MapEntry(match.group(1)!, _removeLinks(match.group(2)!)),
+            (match) => MapEntry(
+              match.group(1)!,
+              _removeLinks(match.group(2)!).nullIfEmpty,
+            ),
           ),
     );
   }
@@ -61,16 +62,18 @@ class FileParser {
             multiLine: true,
           )
           .allMatches(_content)
-          .map((match) => WordPair(match.group(1)!, match.group(2)!))
+          .map((match) => WordPair(match.group(1)!, match.group(2)!.trim()))
           .toList();
 
-  String? _getTranscript() =>
-      RegExp(r'^`.*?(?: \[(.*)])?`').firstMatch(_content)?.group(1);
+  String? _getTranscript() => RegExp(
+    r'^`.*?(?: \[(.*)])?`',
+    multiLine: true,
+  ).firstMatch(_content)?.group(1);
 
   List<String> _getTags() => [
     ...RegExp(
-      r'^#(\p{L}+)(?: #(\p{L}+))*',
-    ).allMatches(_content).map((match) => match.group(1)!),
+      r'(?<=#)\S+',
+    ).allMatches(_content).map((match) => match.group(0)!),
   ];
 
   IrregularVerb? _getIrregularVerb() {

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../parsers/web_parser.dart';
+import 'package:english_core/classes/classes.dart';
 
 class WordPair {
   final String enWord, ruWord;
@@ -18,16 +18,16 @@ class IrregularVerb {
   const IrregularVerb(this.firstForm, this.secondForm, this.thirdForm);
 
   @override
-  String toString() => '$firstForm - $secondForm - $thirdForm';
+  String toString() => '`$firstForm` - `$secondForm` - `$thirdForm`';
 }
 
 class Word {
   final WordPair mainPair;
-  final List<WordPair> wordPairs;
-  String? enExample, ruExample;
+  final List<WordPair> extraWordPairs;
+  final String? enExample, ruExample;
   final IrregularVerb? irregularVerb;
-  late final String? transcript, level;
-  late final List<int>? pronunciationAudio;
+  late String? transcript, level;
+  late List<int>? pronunciationAudio;
 
   Word(
     List<WordPair> pairs, {
@@ -38,23 +38,7 @@ class Word {
     this.irregularVerb,
     this.pronunciationAudio,
   }) : mainPair = pairs[0],
-       wordPairs = pairs.sublist(1);
-
-  static Future<Word> fromWeb(WordPair pair) async {
-    final word = Word([pair]);
-    await word.setInfoFromWeb();
-    return word;
-  }
-
-  Future<void> setInfoFromWeb() async {
-    if (isFull) return; // to avoid spamming the API
-
-    final webParser = WebParser(mainPair.enWord);
-
-    level = await webParser.getLevel();
-    transcript = await webParser.getTranscript();
-    pronunciationAudio = await webParser.getPronunciation();
-  }
+       extraWordPairs = pairs.sublist(1);
 
   bool get isFull =>
       mainPair.isFull &&
@@ -64,13 +48,13 @@ class Word {
       transcript != null &&
       pronunciationAudio != null;
 
+  // it is very doubtful that it should be here.
   void savePronunciation() {
-    if (pronunciationAudio == null) return;
-
-    final audioFile = File(
-      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/${mainPair.enWord}.mp3',
-    );
-
-    audioFile.writeAsBytes(pronunciationAudio!);
+    if (pronunciationAudio != null) {
+      final audioFile = File('${Config.dictionaryPath}${mainPair.enWord}.mp3');
+      audioFile.writeAsBytes(pronunciationAudio!);
+    } else {
+      print('No pronunciation audio to save for ${mainPair.enWord}');
+    }
   }
 }

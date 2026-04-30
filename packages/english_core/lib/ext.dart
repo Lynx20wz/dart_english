@@ -1,7 +1,6 @@
 extension StringExtension on String {
-  String capitalize() {
-    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
-  }
+  String capitalize() =>
+      isEmpty ? '' : '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
 
   String removeSuffix(String suffix) {
     if (endsWith(suffix)) {
@@ -9,8 +8,10 @@ extension StringExtension on String {
     }
     return this;
   }
+}
 
-  String? getStringOrNull() => isEmpty ? null : this;
+extension NullStringExtenion on String? {
+  String? get nullIfEmpty => (this?.isEmpty ?? true) ? null : this;
 }
 
 extension ListExtension<T> on List<T> {

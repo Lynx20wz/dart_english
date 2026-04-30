@@ -5,7 +5,7 @@ import 'package:html/parser.dart';
 import 'package:http/http.dart' show get;
 import 'package:yandex_dictionary_api/yandex_dictionary_api.dart';
 
-import '../classes/config.dart' show Config;
+import 'package:english_core/classes/classes.dart' show Config, Word;
 
 final yandexDictKey = YandexDictionaryKey(apiKey: Config.yandexApiKey);
 final yandexDictApi = YandexDictionaryApi(key: yandexDictKey);
@@ -14,7 +14,7 @@ class WebParser {
   static const _baseUrl = 'https://dictionary.cambridge.org';
   final Future<Document> _document;
 
-  final String word;
+  final Word word;
 
   WebParser(this.word)
     : _document = get(
@@ -29,7 +29,10 @@ class WebParser {
       (await _document).querySelector('.epp-xref.dxref')?.text;
 
   Future<String?> getTranscript() async {
-    final lookupRequest = YandexLookupRequest(lang: 'en-ru', text: word);
+    final lookupRequest = YandexLookupRequest(
+      lang: 'en-ru',
+      text: word.mainPair.enWord,
+    );
 
     final response = await yandexDictApi.lookup(lookupRequest);
     return response.def?.first.ts;
@@ -47,5 +50,13 @@ class WebParser {
     }
 
     return null;
+  }
+
+  Future<void> setInfoFromWeb() async {
+    if (word.isFull) return; // to avoid spamming the API
+
+    word.level = await getLevel();
+    word.transcript = await getTranscript();
+    word.pronunciationAudio = await getPronunciation();
   }
 }

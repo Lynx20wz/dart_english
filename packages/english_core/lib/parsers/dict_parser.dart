@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:english_core/classes/config.dart';
-import 'package:english_core/classes/word.dart';
-import 'package:english_core/classes/word_file.dart';
+import 'package:english_core/english_core.dart';
 import 'package:path/path.dart' show extension;
 
+/// Parses a dictionary directory containing word files in Markdown format.
 class DictParser {
   final String dictPath;
 
