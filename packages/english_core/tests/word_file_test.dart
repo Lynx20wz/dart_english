@@ -1,13 +1,18 @@
 import 'dart:io';
+
 import 'package:english_core/english_core.dart';
 import 'package:test/test.dart';
 
 final testFile = File('test.md');
 
 Word buildFullWord() => Word(
-  [const WordPair('come', 'приходить')],
+  const WordPair('come', 'приходить'),
+  extraPairs: [
+    const WordPair('incoming', 'входящий'),
+    const WordPair('upcoming', 'предстоящий'),
+  ],
   level: 'A1',
-  transcript: 'come',
+  transcript: 'kʌm',
   enExample: 'I came too early',
   ruExample: 'Я пришёл слишком рано',
   pronunciationAudio: [0, 0, 0],
@@ -24,28 +29,28 @@ String buildExpected(WordFile wordFile) {
       :ruExample,
       :pronunciationAudio,
       :irregularVerb,
-      mainPair: WordPair(:enWord, :ruWord),
-      :extraWordPairs,
+      mainPair: WordPair(:original, :translate),
+      extraPairs: extraWordPairs,
     ),
     :tags,
     :organize,
   ) = wordFile;
   final mainLine =
-      '`$enWord${transcript != null ? " [$transcript]" : ""}` - $ruWord';
-  final extraPairsLine = extraWordPairs.isNotEmpty
-      ? '\n${extraWordPairs.map((pair) => '`${pair.enWord}` - ${pair.ruWord}').join('\n')}'
+      '`$original${transcript != null ? " [$transcript]" : ""}`${translate != null ? " - $translate" : ""}';
+  final extraPairsLine = extraWordPairs?.isNotEmpty ?? false
+      ? '\n${extraWordPairs!.map((pair) => '`${pair.original}` - ${pair.translate}').join('\n')}'
       : '';
   final irregularLine = irregularVerb != null
       ? '\n\n`${irregularVerb.firstForm}` - `${irregularVerb.secondForm}` - `${irregularVerb.thirdForm}`'
       : '';
   final pronunciationAudioLine = pronunciationAudio != null
-      ? '\n\n![[$enWord.mp3]]'
+      ? '\n\n![[$original.mp3]]'
       : '';
   final examplesLine = enExample != null ? '\n\n$enExample\n($ruExample)' : '';
 
   return '''---
-en_word: $enWord
-ru_word: $ruWord
+en_word: $original
+ru_word: $translate
 level: $level
 transcript: $transcript
 en_example: $enExample
@@ -62,20 +67,17 @@ $mainLine$extraPairsLine$irregularLine$pronunciationAudioLine$examplesLine
 void main() {
   group('toString()', () {
     test('only main pair', () {
-      final wordFile = WordFile(
-        testFile,
-        Word([const WordPair('test', 'тест')]),
-      );
+      final wordFile = WordFile(testFile, Word(const WordPair('test', 'тест')));
       expect(wordFile.toString(), buildExpected(wordFile));
     });
 
     test('multiple pairs', () {
       final wordFile = WordFile(
         testFile,
-        Word([
+        Word(
           const WordPair('able', 'в состоянии'),
-          const WordPair('able', 'умеющий'),
-        ]),
+          extraPairs: [const WordPair('able', 'умеющий')],
+        ),
       );
 
       expect(wordFile.toString(), buildExpected(wordFile));
@@ -84,7 +86,7 @@ void main() {
     test('with transcript', () {
       final wordFile = WordFile(
         testFile,
-        Word([const WordPair('test', 'тест')], transcript: 'test'),
+        Word(const WordPair('test', 'тест'), transcript: 'test'),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
     });
@@ -93,7 +95,7 @@ void main() {
       final wordFile = WordFile(
         testFile,
         Word(
-          [const WordPair('test', 'тест')],
+          const WordPair('test', 'тест'),
           enExample: 'I wrote some tests',
           ruExample: 'Я написал несколько тестов',
         ),
@@ -104,7 +106,7 @@ void main() {
     test('with level', () {
       final wordFile = WordFile(
         testFile,
-        Word([const WordPair('test', 'тест')], level: 'A2'),
+        Word(const WordPair('test', 'тест'), level: 'A2'),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
     });
@@ -112,7 +114,7 @@ void main() {
     test('with pronunciation audio', () {
       final wordFile = WordFile(
         testFile,
-        Word([const WordPair('test', 'тест')], pronunciationAudio: [0, 0, 0]),
+        Word(const WordPair('test', 'тест'), pronunciationAudio: [0, 0, 0]),
       );
 
       expect(wordFile.toString(), buildExpected(wordFile));
@@ -121,9 +123,10 @@ void main() {
     test('with irregular verb', () {
       final wordFile = WordFile(
         testFile,
-        Word([
+        Word(
           const WordPair('come', 'приходить'),
-        ], irregularVerb: const IrregularVerb('come', 'came', 'come')),
+          irregularVerb: const IrregularVerb('come', 'came', 'come'),
+        ),
       );
 
       expect(wordFile.toString(), buildExpected(wordFile));

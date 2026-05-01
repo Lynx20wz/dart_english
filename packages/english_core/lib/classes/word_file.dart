@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:english_core/ext.dart';
 import 'package:english_core/parsers/file_parser.dart';
+import 'package:path/path.dart' as p;
 
 import 'word.dart';
 
@@ -32,8 +32,8 @@ class WordFile {
   factory WordFile.fromFile(File file) => FileParser(file).fileParse();
 
   Map<String, String?> _getBaseProperties() => {
-    'en_word': word.mainPair.enWord,
-    'ru_word': word.mainPair.ruWord,
+    'en_word': word.mainPair.original,
+    'ru_word': word.mainPair.translate,
     'level': word.level,
     'transcript': word.transcript,
     'en_example': word.enExample,
@@ -75,15 +75,13 @@ class WordFile {
     }
 
     // Main word
-    buffer.write('\n`${word.mainPair.enWord}');
+    buffer.write('\n`${word.mainPair.original}');
     if (word.transcript != null) buffer.write(' [${word.transcript}]');
-    buffer.write('` - ${word.mainPair.ruWord}');
+    buffer.write('` - ${word.mainPair.translate}');
 
     // Extra pairs
-    if (word.extraWordPairs.isNotEmpty) {
-      for (final pair in word.extraWordPairs) {
-        buffer.write('\n`${pair.enWord}` - ${pair.ruWord}');
-      }
+    for (final pair in word.extraPairs ?? []) {
+      buffer.write('\n`${pair.original}` - ${pair.translate}');
     }
 
     // Irregular verb
@@ -93,7 +91,7 @@ class WordFile {
 
     // Pronunciation
     if (word.pronunciationAudio != null) {
-      buffer.write('\n\n![[${word.mainPair.enWord}.mp3]]');
+      buffer.write('\n\n![[${word.mainPair.original}.mp3]]');
     }
 
     // Examples

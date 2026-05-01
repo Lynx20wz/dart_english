@@ -17,7 +17,7 @@ class FileParser {
     if (!organize) {
       return WordFile(
         file,
-        Word([WordPair(p.basenameWithoutExtension(file.path), '')]),
+        Word(WordPair(p.basenameWithoutExtension(file.path))),
         properties: properties,
         organize: false,
       );
@@ -25,9 +25,11 @@ class FileParser {
 
     final List<String> tags = _getTags();
     final (enExample, ruExample) = _getExample();
+    final [mainPair, ...extra] = _getWordPairs();
 
     final word = Word(
-      _getWordPairs(),
+      mainPair,
+      extraPairs: extra,
       enExample: enExample,
       ruExample: ruExample,
       irregularVerb: _getIrregularVerb(),

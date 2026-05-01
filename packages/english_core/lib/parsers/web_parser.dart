@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:english_core/classes/classes.dart' show Config, Word;
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart';
 import 'package:http/http.dart' show get;
 import 'package:yandex_dictionary_api/yandex_dictionary_api.dart';
-
-import 'package:english_core/classes/classes.dart' show Config, Word;
 
 final yandexDictKey = YandexDictionaryKey(apiKey: Config.yandexApiKey);
 final yandexDictApi = YandexDictionaryApi(key: yandexDictKey);
@@ -31,7 +30,7 @@ class WebParser {
   Future<String?> getTranscript() async {
     final lookupRequest = YandexLookupRequest(
       lang: 'en-ru',
-      text: word.mainPair.enWord,
+      text: word.mainPair.original,
     );
 
     final response = await yandexDictApi.lookup(lookupRequest);
