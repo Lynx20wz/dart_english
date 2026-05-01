@@ -41,6 +41,15 @@ class Word {
     this.pronunciationAudio,
   });
 
+  /// Syntactic sugar for `Word(WordPair(original))`.
+  /// Creating a [Word] with a single word (without translation).
+  factory Word.fromWord(String original) => Word(WordPair(original));
+
+  /// Syntactic sugar for `Word(WordPair(original, translate))`.
+  /// Creating a [Word] with two words (with translation).
+  factory Word.fromWords(String original, String translate) =>
+      Word(WordPair(original, translate));
+
   bool get isFull =>
       mainPair.isFull &&
       enExample != null &&
