@@ -1,28 +1,19 @@
 import 'dart:io';
-
+import 'package:path/path.dart' as p;
 import 'package:dotenv/dotenv.dart';
 
-final envFile = File('${Platform.script.path}/../../.env');
-final env = DotEnv()..load([envFile.path]);
-
 class Config {
-  static String get yandexApiKey {
-    final apiKey = env['YANDEX_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
-      print('\x1b[31mError: YANDEX_API_KEY is not set\x1b[0m');
-      print('Set it with: export YANDEX_API_KEY=your_key_here');
-      exit(1);
-    }
-    return apiKey;
-  }
+  // Lazy initialization of .env
+  static final DotEnv _env = () {
+    final scriptDir = p.dirname(Platform.script.toFilePath());
+    final envPath = p.normalize(p.join(scriptDir, '..', '.env'));
+    return DotEnv()..load([envPath]);
+  }();
 
-  static String get dictionaryPath {
-    final path = env['DICTIONARY_PATH'];
-    if (path == null || path.isEmpty) {
-      print('\x1b[31mError: DICTIONARY_PATH is not set\x1b[0m');
-      print('Set it with: export DICTIONARY_PATH=your_path_here');
-      exit(1);
-    }
-    return path;
-  }
+  /// Dictionary path
+  /// Returns the dictionary path from the .env file.
+  /// If the path is not set or is an empty string, throws an exception.
+  static String get dictionaryPath => _env['DICTIONARY_PATH']?.isEmpty ?? true
+      ? throw Exception('DICTIONARY_PATH is not set in .env')
+      : _env['DICTIONARY_PATH']!;
 }
