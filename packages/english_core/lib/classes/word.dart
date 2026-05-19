@@ -5,7 +5,22 @@ import 'package:english_core/classes/classes.dart';
 class WordPair {
   final String original;
   final String? translate;
-  const WordPair(this.original, [this.translate]);
+
+  /// Creates a [WordPair] with trimmed and lowercased [original] and [translate].
+  /// This may be provide only one word, then [translate] will be `null`.
+  WordPair(String original, [String? translate])
+    : original = original.trim().toLowerCase(),
+      translate = translate?.trim().toLowerCase();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WordPair &&
+          original == other.original &&
+          translate == other.translate;
+
+  @override
+  int get hashCode => original.hashCode ^ (translate?.hashCode ?? 0);
 
   @override
   String toString() => '$original - $translate';

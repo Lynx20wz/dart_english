@@ -1,6 +1,6 @@
 name: english_core
 description: Core library for English-Russian dictionary.
-version: 0.2.0
+version: 0.2.1
 repository: https://github.com/Lynx20wz/dart_english
 
 resolution: workspace

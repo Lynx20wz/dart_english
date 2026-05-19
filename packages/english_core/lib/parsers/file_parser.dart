@@ -11,14 +11,14 @@ class FileParser {
   FileParser(this.file);
 
   WordFile fileParse() {
-    final properties = _getProperties();
+    final properties = _getProps();
     final organize = properties['organize'] == 'true';
 
     if (!organize) {
       return WordFile(
         file,
         Word(WordPair(p.basenameWithoutExtension(file.path))),
-        properties: properties,
+        props: properties,
         organize: false,
       );
     }
@@ -38,23 +38,20 @@ class FileParser {
       level: tags.last != 'Слова' ? tags.last : '',
     );
 
-    return WordFile(file, word, properties: properties, tags: tags);
+    return WordFile(file, word, props: properties, tags: tags);
   }
 
-  Map<String, String?> _getProperties() {
+  /// Returns a map of properties parsed from the file content.
+  /// Note: "props" is an abbreviation for "properties"
+  Map<String, String?> _getProps() {
     final lines = _splitContentByLines(_content);
-    final lastPropertyLineIndex = lines.lastIndexOf('---');
-    if (lastPropertyLineIndex == -1) return {};
+    final lastPropsLineIndex = lines.lastIndexOf('---');
+    if (lastPropsLineIndex == -1) return {};
 
     return Map.fromEntries(
-      RegExp(r'^(\S+):\s*(.+)$', multiLine: true)
-          .allMatches(lines.sublist(1, lastPropertyLineIndex).join('\n'))
-          .map(
-            (match) => MapEntry(
-              match.group(1)!,
-              _removeLinks(match.group(2)!).nullIfEmpty,
-            ),
-          ),
+      RegExp(r'^(\S+):( (\S+)$)?', multiLine: true)
+          .allMatches(lines.sublist(1, lastPropsLineIndex).join('\n'))
+          .map((m) => MapEntry(m.group(1)!, _removeLinks(m.group(2)?.trim()))),
     );
   }
 

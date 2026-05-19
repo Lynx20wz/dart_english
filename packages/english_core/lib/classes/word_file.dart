@@ -10,7 +10,9 @@ class WordFile {
   final File file;
   final Word word;
   final bool organize;
-  late Map<String, String?> properties;
+
+  /// props is an abbreviation for "properties"
+  late Map<String, String?> props;
   late final List<String> tags;
 
   WordFile(
@@ -18,9 +20,28 @@ class WordFile {
     this.word, {
     this.organize = true,
     List<String>? tags,
-    Map<String, String?>? properties,
+    Map<String, String?>? props,
   }) {
-    this.properties = properties ?? _getBaseProperties();
+    final baseProps = {
+      'en_word': word.mainPair.original,
+      'ru_word': word.mainPair.translate,
+      'level': word.level,
+      'transcript': word.transcript,
+      'en_example': word.enExample,
+      'ru_example': word.ruExample,
+      'organize': 'true',
+    };
+
+    this.props = {
+      ...baseProps,
+      for (final e in (props ?? {}).entries) e.key: e.value ?? baseProps[e.key],
+    };
+
+    if (this.props.containsValue('')) {
+      throw ArgumentError(
+        'Properties cannot contain empty strings; instead, use null values.\nProps: ${this.props}',
+      );
+    }
 
     // My standart tags
     this.tags = tags ?? ['Обучение', 'Английский', 'Слова'];
@@ -30,16 +51,6 @@ class WordFile {
   }
 
   factory WordFile.fromFile(File file) => FileParser(file).fileParse();
-
-  Map<String, String?> _getBaseProperties() => {
-    'en_word': word.mainPair.original,
-    'ru_word': word.mainPair.translate,
-    'level': word.level,
-    'transcript': word.transcript,
-    'en_example': word.enExample,
-    'ru_example': word.ruExample,
-    'organize': 'true',
-  };
 
   bool get isFull => word.isFull && organize;
 
@@ -60,9 +71,9 @@ class WordFile {
     final buffer = StringBuffer();
 
     // Properties
-    if (properties.isNotEmpty) {
+    if (props.isNotEmpty) {
       buffer.writeln('---');
-      for (final entry in properties.entries) {
+      for (final entry in props.entries) {
         buffer.writeln('${entry.key}: ${entry.value}');
       }
 
