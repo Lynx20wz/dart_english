@@ -9,6 +9,8 @@ Commit messages should follow this structure:
 ```md
 [<type>] (<module> v<package_version>) <description>
 
+<optional description>
+
 - `<scope>`: <action in past tense> <description>
 - `<scope>`: `<initial_name>` -> `<updated_name>`
 - `<scope>`:
@@ -24,6 +26,7 @@ Where:
 - `<type>`: Change type. Allowed values: `feat`, `fix`, `ref`, `perf`, `docs`, `test`, `chore`.
 - `<scope>`: File, directory, or code entity name.
 - `<description>`: Concise explanation of changes.
+- `<optional description>`: Optional context or explanation of the commit's purpose
 
 ## Rules
 - All code objects (methods, classes, variables, types) must be wrapped in backticks: `WordPair`.

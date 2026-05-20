@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:english_core/classes/classes.dart';
-import 'package:english_core/ext.dart';
 import 'package:path/path.dart' as p;
 
 class FileParser {
@@ -35,7 +34,7 @@ class FileParser {
       irregularVerb: _getIrregularVerb(),
       pronunciationAudio: _getPronunciationAudio(),
       transcript: _getTranscript(),
-      level: tags.last != 'Слова' ? tags.last : '',
+      level: tags.last != 'Слова' ? tags.last : null,
     );
 
     return WordFile(file, word, props: properties, tags: tags);
@@ -61,7 +60,7 @@ class FileParser {
             multiLine: true,
           )
           .allMatches(_content)
-          .map((match) => WordPair(match.group(1)!, match.group(2)!.trim()))
+          .map((match) => WordPair(match.group(1)!, match.group(2)!))
           .toList();
 
   String? _getTranscript() => RegExp(
@@ -82,11 +81,11 @@ class FileParser {
         : IrregularVerb(result[1]!, result[2]!, result[3]!);
   }
 
-  (String, String) _getExample() {
+  (String?, String?) _getExample() {
     final lines = _splitContentByLines(_content);
 
-    final ruMatch = RegExp(r'^\((.+)\)$').firstMatch(_content);
-    if (ruMatch == null) return ('', '');
+    final ruMatch = RegExp(r'^\((.+)\)$', multiLine: true).firstMatch(_content);
+    if (ruMatch == null) return (null, null);
 
     final ruExample = ruMatch.group(1)!;
 
@@ -105,7 +104,7 @@ class FileParser {
     return audioFile.existsSync() ? audioFile.readAsBytesSync() : [];
   }
 
-  String _removeLinks(String line) => line.replaceAllMapped(
+  String? _removeLinks(String? line) => line?.replaceAllMapped(
     RegExp(r'\[\[(?:.*\|)?(.*?)]]'),
     (Match m) => m.group(1) ?? '',
   );
