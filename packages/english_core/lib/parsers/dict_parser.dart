@@ -7,7 +7,7 @@ import 'package:path/path.dart' show extension;
 class DictParser {
   final String dictPath;
 
-  DictParser({String? dictPath}) : dictPath = dictPath ?? Config.dictionaryPath;
+  DictParser([String? dictPath]) : dictPath = dictPath ?? Config.dictionaryPath;
 
   List<WordFile> parseAllFiles() => Directory(dictPath)
       .listSync()
@@ -18,4 +18,21 @@ class DictParser {
 
   List<Word> parseAllWords() =>
       parseAllFiles().map((file) => file.word).toList();
+
+  /// Formats all files which were provided.
+  /// If [loadWebInfo] is `true`, web information will be loaded for each word.
+  ///
+  /// Yields a stream of `(index, file)` pairs for progress tracking.
+  Stream<(int, WordFile)> formatAllFiles({
+    List<WordFile>? files,
+    bool loadWebInfo = false,
+  }) async* {
+    for (final (i, file) in (files ?? parseAllFiles()).indexed) {
+      yield (i, file); // for progress tracking
+      if (loadWebInfo) {
+        await WebParser(file.word).setInfoFromWeb();
+      }
+      file.write();
+    }
+  }
 }
