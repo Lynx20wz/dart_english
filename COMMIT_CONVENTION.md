@@ -20,8 +20,8 @@ Commit messages should follow this structure:
 
 Where:
 - `<module>`: Target module identifier
-  - `CM` — Core module (`packages/english_core`)
-  - `EH` — English Helper app (`packages/english_helper`)
+  - `CM` — Core module (all path relative to `packages/english_core`)
+  - `EH` — English Helper app (all path relative to `packages/english_helper`)
 - `v<package_version>`: Current package version from `pubspec.yaml`. Must match exactly.
 - `<type>`: Change type. Allowed values: `feat`, `fix`, `ref`, `perf`, `docs`, `test`, `chore`.
 - `<scope>`: File, directory, or code entity name.
@@ -29,7 +29,7 @@ Where:
 - `<optional description>`: Optional context or explanation of the commit's purpose
 
 ## Rules
-- All code objects (methods, classes, variables, types) must be wrapped in backticks: `WordPair`.
+- All paths and code objects (methods, classes, variables, types) must be wrapped in backticks: `WordPair`.
 - Keep commits atomic. If changes span multiple unrelated scopes, split them.
 - Use past tense for actions: `Added`, `Fixed`, `Moved`, `Updated`, `Overrode`.
 

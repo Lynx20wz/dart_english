@@ -6,10 +6,10 @@ import 'package:test/test.dart';
 final testFile = File('test.md');
 
 Word buildFullWord() => Word(
-  const WordPair('come', 'приходить'),
+  WordPair('come', 'приходить'),
   extraPairs: [
-    const WordPair('incoming', 'входящий'),
-    const WordPair('upcoming', 'предстоящий'),
+    WordPair('incoming', 'входящий'),
+    WordPair('upcoming', 'предстоящий'),
   ],
   level: 'A1',
   transcript: 'kʌm',
@@ -67,7 +67,7 @@ $mainLine$extraPairsLine$irregularLine$pronunciationAudioLine$examplesLine
 void main() {
   group('toString()', () {
     test('only main pair', () {
-      final wordFile = WordFile(testFile, Word(const WordPair('test', 'тест')));
+      final wordFile = WordFile(testFile, Word(WordPair('test', 'тест')));
       expect(wordFile.toString(), buildExpected(wordFile));
     });
 
@@ -75,8 +75,8 @@ void main() {
       final wordFile = WordFile(
         testFile,
         Word(
-          const WordPair('able', 'в состоянии'),
-          extraPairs: [const WordPair('able', 'умеющий')],
+          WordPair('able', 'в состоянии'),
+          extraPairs: [WordPair('able', 'умеющий')],
         ),
       );
 
@@ -86,7 +86,7 @@ void main() {
     test('with transcript', () {
       final wordFile = WordFile(
         testFile,
-        Word(const WordPair('test', 'тест'), transcript: 'test'),
+        Word(WordPair('test', 'тест'), transcript: 'test'),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
     });
@@ -95,7 +95,7 @@ void main() {
       final wordFile = WordFile(
         testFile,
         Word(
-          const WordPair('test', 'тест'),
+          WordPair('test', 'тест'),
           enExample: 'I wrote some tests',
           ruExample: 'Я написал несколько тестов',
         ),
@@ -106,7 +106,7 @@ void main() {
     test('with level', () {
       final wordFile = WordFile(
         testFile,
-        Word(const WordPair('test', 'тест'), level: 'A2'),
+        Word(WordPair('test', 'тест'), level: 'A2'),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
     });
@@ -114,7 +114,7 @@ void main() {
     test('with pronunciation audio', () {
       final wordFile = WordFile(
         testFile,
-        Word(const WordPair('test', 'тест'), pronunciationAudio: [0, 0, 0]),
+        Word(WordPair('test', 'тест'), pronunciationAudio: [0, 0, 0]),
       );
 
       expect(wordFile.toString(), buildExpected(wordFile));
@@ -124,7 +124,7 @@ void main() {
       final wordFile = WordFile(
         testFile,
         Word(
-          const WordPair('come', 'приходить'),
+          WordPair('come', 'приходить'),
           irregularVerb: const IrregularVerb('come', 'came', 'come'),
         ),
       );
@@ -145,5 +145,33 @@ void main() {
     wordFile.write();
 
     expect(testFile.readAsStringSync(), buildExpected(wordFile));
+  });
+
+  group('Props', () {
+    test('setup', () {
+      final wordFile = WordFile(
+        testFile,
+        Word(WordPair('test', 'тест')),
+        props: {'level': 'B2', 'transcript': null},
+        organize: true,
+      );
+
+      expect(
+        wordFile.props,
+        allOf(containsPair('level', 'B2'), containsPair('transcript', null)),
+      );
+    });
+
+    test('provide empty string', () {
+      expect(
+        () => WordFile(
+          testFile,
+          Word(WordPair('test', 'тест')),
+          props: {'level': '', 'transcript': null},
+          organize: true,
+        ),
+        throwsArgumentError,
+      );
+    });
   });
 }
