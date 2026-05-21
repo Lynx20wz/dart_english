@@ -1,8 +1,12 @@
 import 'package:english_core/english_core.dart' show Word, DictParser;
-import 'package:english_flutter/widgets/pronunciation_card.dart';
+import 'package:english_helper/widgets/pronunciation_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final wordsProvider = Provider<List<Word>>((_) => DictParser().parseAllWords());
+final wordsProvider = Provider<List<Word>>(
+  (_) =>
+      DictParser().parseAllWords()
+        ..sort((a, b) => a.mainPair.original.compareTo(b.mainPair.original)),
+);
 final pinnedCardsProvider =
     NotifierProvider<PinnedCardsNotifier, List<PronunciationCard>>(
       PinnedCardsNotifier.new,

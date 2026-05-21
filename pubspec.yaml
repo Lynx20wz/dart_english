@@ -1,6 +1,5 @@
 name: english
 description: Helper for keeping English-Russian dictionary in Obsidian.
-version: 0.0.1
 repository: https://github.com/Lynx20wz/dart_english
 publish_to: none
 
@@ -9,7 +8,7 @@ environment:
 
 workspace:
   - packages/english_core
-  - packages/english_flutter
+  - packages/english_helper
 
 dev_dependencies:
   lints: ^6.0.0

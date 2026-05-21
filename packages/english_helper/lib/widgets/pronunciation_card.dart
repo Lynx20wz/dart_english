@@ -2,7 +2,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:audioplayers/audioplayers.dart'
     show AudioPlayer, BytesSource, PlayerState;
-import 'package:english_flutter/provider.dart';
+import 'package:english_helper/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -127,8 +127,9 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
             ),
             const Spacer(),
             IconButton(
-              onPressed: () =>
-                  ref.read(pinnedCardsProvider.notifier).remove(widget),
+              onPressed: () => ref
+                  .read(pinnedCardsProvider.notifier)
+                  .remove(widget.transcription),
               icon: const Icon(Icons.push_pin, size: 20),
               color: isPinned
                   ? theme.colorScheme.primary

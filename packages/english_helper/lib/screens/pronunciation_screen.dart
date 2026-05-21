@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:english_core/english_core.dart';
-import 'package:english_flutter/provider.dart';
-import 'package:english_flutter/widgets/back_fab.dart';
-import 'package:english_flutter/widgets/pronunciation_card.dart';
+import 'package:english_helper/provider.dart';
+import 'package:english_helper/widgets/back_fab.dart';
+import 'package:english_helper/widgets/pronunciation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,8 +49,9 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
     });
 
     try {
-      final parser = WebParser(word);
-      final transcript = await parser.getTranscript();
+      final parser = WebParser(Word.fromWord(word));
+      // WIP: While `getTranscript()` doesn't work
+      final transcript = null; // await parser.getTranscript();
       final pronunciation = await parser.getPronunciation();
 
       if (mounted) {
@@ -63,8 +64,8 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            duration: const Duration(seconds: 2),
+            content: Text(e.toString()),
+            duration: const Duration(seconds: 3),
           ),
         );
       }

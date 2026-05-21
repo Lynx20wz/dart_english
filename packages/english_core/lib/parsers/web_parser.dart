@@ -52,7 +52,8 @@ class WebParser {
     if (word.isFull) return; // to avoid spamming the API
 
     word.level = await getLevel();
-    word.transcript = await getTranscript();
+    // WIP: While `getTranscript()` doesn't work
+    word.transcript = null; // await getTranscript();
     word.pronunciationAudio = await getPronunciation();
   }
 }

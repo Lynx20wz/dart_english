@@ -1,4 +1,4 @@
-# CLI dictionary helper
+# Dictionary helper
 
 Helper for keeping English-Russian dictionary in Obsidian.
 

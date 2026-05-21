@@ -8,5 +8,5 @@ class WordWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      ListTile(title: Text(word.mainPair.enWord));
+      ListTile(title: Text(word.mainPair.original));
 }
