@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:english_core/english_core.dart';
 import 'package:english_helper/provider.dart';
 import 'package:english_helper/widgets/back_fab.dart';
@@ -19,7 +17,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   late final TextEditingController _wordController;
   late final FocusNode _focusNode;
   String? _transcript;
-  Uint8List? _pronunciation;
+  List<int>? _pronunciation;
 
   bool _isLoading = false;
 
@@ -49,15 +47,13 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
     });
 
     try {
-      final parser = WebParser(Word.fromWord(word));
-      // WIP: While `getTranscript()` doesn't work
-      final transcript = null; // await parser.getTranscript();
-      final pronunciation = await parser.getPronunciation();
+      final wordObj = Word.fromWord(word);
+      await wordObj.setInfoFromWeb();
 
       if (mounted) {
         setState(() {
-          _transcript = transcript;
-          _pronunciation = pronunciation;
+          _transcript = wordObj.transcript;
+          _pronunciation = wordObj.pronunciationAudio;
         });
       }
     } catch (e) {

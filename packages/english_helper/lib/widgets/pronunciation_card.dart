@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PronunciationCard extends ConsumerStatefulWidget {
   final String _transcription;
-  final Uint8List? pronunciation;
+  final List<int>? pronunciation;
   final bool autoplay;
 
   const PronunciationCard(
@@ -22,7 +22,7 @@ class PronunciationCard extends ConsumerStatefulWidget {
 
   PronunciationCard copyWith({
     String? transcription,
-    Uint8List? pronunciation,
+    List<int>? pronunciation,
     bool? autoplay,
     void Function(PronunciationCard card)? onPinned,
   }) => PronunciationCard(
@@ -63,7 +63,7 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
       }
 
       await _player.stop();
-      await _player.play(BytesSource(widget.pronunciation!));
+      await _player.play(BytesSource(widget.pronunciation! as Uint8List));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
