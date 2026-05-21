@@ -1,6 +1,8 @@
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:english_core/classes/classes.dart';
+import 'package:http/http.dart' show get;
+
+const baseUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en';
 
 class WordPair {
   final String original;
@@ -42,7 +44,7 @@ class Word {
   final List<WordPair>? extraPairs;
   final String? enExample, ruExample;
   final IrregularVerb? irregularVerb;
-  late String? transcript, level;
+  late String? transcript;
   late List<int>? pronunciationAudio;
 
   Word(
@@ -51,7 +53,6 @@ class Word {
     this.enExample,
     this.ruExample,
     this.transcript,
-    this.level,
     this.irregularVerb,
     this.pronunciationAudio,
   });
@@ -69,19 +70,28 @@ class Word {
       mainPair.isFull &&
       enExample != null &&
       ruExample != null &&
-      level != null &&
       transcript != null &&
       pronunciationAudio != null;
 
-  // it is very doubtful that it should be here.
-  void savePronunciation() {
-    if (pronunciationAudio != null) {
-      final audioFile = File(
-        '${Config.dictionaryPath}${mainPair.original}.mp3',
-      );
-      audioFile.writeAsBytes(pronunciationAudio!);
-    } else {
-      print('No pronunciation audio to save for ${mainPair.original}');
+  Future<void> setInfoFromWeb() async {
+    if (isFull) return; // to avoid spamming the API
+
+    final uri = Uri.parse('$baseUrl/${mainPair.original}');
+    final response = await get(uri);
+    final json = jsonDecode(response.body)[0];
+
+    while (transcript == null || pronunciationAudio == null) {
+      for (final phonetic in json['phonetics']) {
+        transcript ??= phonetic['text']?.replaceAll('/', '');
+        final pronunciationLink = phonetic['audio'] as String?;
+
+        if (pronunciationLink != null && pronunciationLink.isNotEmpty) {
+          final response = await get(
+            Uri.parse(pronunciationLink),
+          ).then((value) => value);
+          pronunciationAudio = response.bodyBytes;
+        }
+      }
     }
   }
 }

@@ -29,9 +29,7 @@ class DictParser {
   }) async* {
     for (final (i, file) in (files ?? parseAllFiles()).indexed) {
       yield (i, file); // for progress tracking
-      if (loadWebInfo) {
-        await WebParser(file.word).setInfoFromWeb();
-      }
+      if (loadWebInfo) await file.word.setInfoFromWeb();
       file.write();
     }
   }

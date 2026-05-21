@@ -1,7 +1,6 @@
 ---
 en_word: 
 ru_word: 
-level: 
 transcript:
 en_example:
 ru_example:

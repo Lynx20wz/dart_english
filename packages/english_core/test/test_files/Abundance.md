@@ -1,16 +1,17 @@
 ---
-en_word: null
-ru_word: null
-level: null
-transcript: null
-en_example: null
-ru_example: null
+en_word: abundance
+ru_word: изобилие, богатство, обилие, достаток
+transcript: əˈbʌn.dn̩s
+en_example: We aren't famous for the abundance of the assortment, we're famous for its quality.
+ru_example: Мы не славимся изобилием ассортимента, мы славимся его качеством
 organize: true
 ---
 
 #Обучение #Английский #Слова
 
-`abundance` - изобилие, богатство, обилие, достаток
+`abundance [əˈbʌn.dn̩s]` - изобилие, богатство, обилие, достаток
+
+![[abundance.mp3]]
 
 We aren't famous for the abundance of the assortment, we're famous for its quality.
 (Мы не славимся изобилием ассортимента, мы славимся его качеством)

@@ -10,14 +10,12 @@ class FileParser {
   FileParser(this.file);
 
   WordFile fileParse() {
-    final properties = _getProps();
-    final organize = properties['organize'] == 'true';
+    final organize = _content.contains('organize: true');
 
     if (!organize) {
       return WordFile(
         file,
         Word(WordPair(p.basenameWithoutExtension(file.path))),
-        props: properties,
         organize: false,
       );
     }
@@ -34,24 +32,9 @@ class FileParser {
       irregularVerb: _getIrregularVerb(),
       pronunciationAudio: _getPronunciationAudio(),
       transcript: _getTranscript(),
-      level: tags.last != 'Слова' ? tags.last : null,
     );
 
-    return WordFile(file, word, props: properties, tags: tags);
-  }
-
-  /// Returns a map of properties parsed from the file content.
-  /// Note: "props" is an abbreviation for "properties"
-  Map<String, String?> _getProps() {
-    final lines = _splitContentByLines(_content);
-    final lastPropsLineIndex = lines.lastIndexOf('---');
-    if (lastPropsLineIndex == -1) return {};
-
-    return Map.fromEntries(
-      RegExp(r'^(\S+):( (\S+)$)?', multiLine: true)
-          .allMatches(lines.sublist(1, lastPropsLineIndex).join('\n'))
-          .map((m) => MapEntry(m.group(1)!, _removeLinks(m.group(2)?.trim()))),
-    );
+    return WordFile(file, word, tags: tags);
   }
 
   List<WordPair> _getWordPairs() =>
@@ -103,11 +86,6 @@ class FileParser {
 
     return audioFile.existsSync() ? audioFile.readAsBytesSync() : [];
   }
-
-  String? _removeLinks(String? line) => line?.replaceAllMapped(
-    RegExp(r'\[\[(?:.*\|)?(.*?)]]'),
-    (Match m) => m.group(1) ?? '',
-  );
 
   List<String> _splitContentByLines(String content) => content
       .split('\n')

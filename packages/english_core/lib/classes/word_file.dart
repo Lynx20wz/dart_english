@@ -4,6 +4,7 @@ import 'package:english_core/ext.dart';
 import 'package:english_core/parsers/file_parser.dart';
 import 'package:path/path.dart' as p;
 
+import 'config.dart' show Config;
 import 'word.dart';
 
 class WordFile {
@@ -11,43 +12,28 @@ class WordFile {
   final Word word;
   final bool organize;
 
-  /// props is an abbreviation for "properties"
-  late Map<String, String?> props;
   late final List<String> tags;
 
-  WordFile(
-    this.file,
-    this.word, {
-    this.organize = true,
-    List<String>? tags,
-    Map<String, String?>? props,
-  }) {
-    final baseProps = {
-      'en_word': word.mainPair.original,
-      'ru_word': word.mainPair.translate,
-      'level': word.level,
-      'transcript': word.transcript,
-      'en_example': word.enExample,
-      'ru_example': word.ruExample,
-      'organize': 'true',
-    };
+  /// props is an abbreviation for "properties"
+  Map<String, String?> get props => organize
+      ? {
+          'en_word': word.mainPair.original,
+          'ru_word': word.mainPair.translate,
+          'transcript': word.transcript,
+          'en_example': word.enExample,
+          'ru_example': word.ruExample,
+          'organize': 'true',
+        }
+      : {'organize': 'false'};
 
-    this.props = {
-      ...baseProps,
-      for (final e in (props ?? {}).entries) e.key: e.value ?? baseProps[e.key],
-    };
-
-    if (this.props.containsValue('')) {
+  WordFile(this.file, this.word, {this.organize = true, List<String>? tags}) {
+    if (props.containsValue('')) {
       throw ArgumentError(
-        'Properties cannot contain empty strings; instead, use null values.\nProps: ${this.props}',
+        'Properties cannot contain empty strings; instead, use null values.\nProps: $props',
       );
     }
 
-    // My standart tags
     this.tags = tags ?? ['Обучение', 'Английский', 'Слова'];
-
-    // Add level tag if available
-    if (word.level != null) this.tags.add(word.level!);
   }
 
   factory WordFile.fromFile(File file) => FileParser(file).fileParse();
@@ -55,11 +41,25 @@ class WordFile {
   bool get isFull => word.isFull && organize;
 
   void write() {
+    // we can't format the file if it's not organized
+    if (!organize) return;
+
     if (!file.existsSync()) {
       print('File ${p.basename(file.path)} does not exist. It will be created');
     }
 
     file.writeAsStringSync(toString());
+  }
+
+  void savePronunciation() {
+    if (word.pronunciationAudio != null) {
+      final audioFile = File(
+        '${Config.dictionaryPath}${word.mainPair.original}.mp3',
+      );
+      audioFile.writeAsBytes(word.pronunciationAudio!);
+    } else {
+      print('No pronunciation audio to save for ${word.mainPair.original}');
+    }
   }
 
   /// Returns a string representation of the word file.

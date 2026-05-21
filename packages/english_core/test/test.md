@@ -1,14 +1,13 @@
 ---
 en_word: come
 ru_word: приходить
-level: A1
 transcript: kʌm
 en_example: I came too early
 ru_example: Я пришёл слишком рано
 organize: true
 ---
 
-#Обучение #Английский #Слова #A1
+#Обучение #Английский #Слова
 
 `come [kʌm]` - приходить
 `incoming` - входящий

@@ -8,7 +8,6 @@ Helper for keeping English-Russian dictionary in Obsidian.
 ---
 en_word: come
 ru_word: приходить
-level: A1
 transcript: come
 en_example: I came too early
 ru_example: Я пришёл слишком рано

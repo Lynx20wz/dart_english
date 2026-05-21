@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:english_core/english_core.dart';
 import 'package:test/test.dart';
 
-final testFile = File('test.md');
+final testFile = File('test/test.md');
 
 Word buildFullWord() => Word(
   WordPair('come', 'приходить'),
@@ -11,7 +11,6 @@ Word buildFullWord() => Word(
     WordPair('incoming', 'входящий'),
     WordPair('upcoming', 'предстоящий'),
   ],
-  level: 'A1',
   transcript: 'kʌm',
   enExample: 'I came too early',
   ruExample: 'Я пришёл слишком рано',
@@ -23,7 +22,6 @@ String buildExpected(WordFile wordFile) {
   // deconstruction
   final WordFile(
     word: Word(
-      :level,
       :transcript,
       :enExample,
       :ruExample,
@@ -51,7 +49,6 @@ String buildExpected(WordFile wordFile) {
   return '''---
 en_word: $original
 ru_word: $translate
-level: $level
 transcript: $transcript
 en_example: $enExample
 ru_example: $ruExample
@@ -103,14 +100,6 @@ void main() {
       expect(wordFile.toString(), buildExpected(wordFile));
     });
 
-    test('with level', () {
-      final wordFile = WordFile(
-        testFile,
-        Word(WordPair('test', 'тест'), level: 'A2'),
-      );
-      expect(wordFile.toString(), buildExpected(wordFile));
-    });
-
     test('with pronunciation audio', () {
       final wordFile = WordFile(
         testFile,
@@ -145,33 +134,5 @@ void main() {
     wordFile.write();
 
     expect(testFile.readAsStringSync(), buildExpected(wordFile));
-  });
-
-  group('Props', () {
-    test('setup', () {
-      final wordFile = WordFile(
-        testFile,
-        Word(WordPair('test', 'тест')),
-        props: {'level': 'B2', 'transcript': null},
-        organize: true,
-      );
-
-      expect(
-        wordFile.props,
-        allOf(containsPair('level', 'B2'), containsPair('transcript', null)),
-      );
-    });
-
-    test('provide empty string', () {
-      expect(
-        () => WordFile(
-          testFile,
-          Word(WordPair('test', 'тест')),
-          props: {'level': '', 'transcript': null},
-          organize: true,
-        ),
-        throwsArgumentError,
-      );
-    });
   });
 }

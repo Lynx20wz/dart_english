@@ -44,4 +44,12 @@ void main() {
     expect(word.mainPair.toString(), 'come - приходить');
     expect(word.irregularVerb.toString(), '`come` - `came` - `come`');
   });
+
+  test('setInfoFromWeb', () async {
+    final word = Word(WordPair('hello', 'привет'));
+    await word.setInfoFromWeb();
+
+    expect(word.transcript, 'həˈləʊ');
+    expect(word.pronunciationAudio, isNotNull);
+  });
 }
