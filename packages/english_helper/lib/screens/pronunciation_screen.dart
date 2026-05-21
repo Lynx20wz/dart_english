@@ -73,7 +73,10 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final pinnedCards = ref.watch(pinnedCardsProvider);
+
+    // `.read` instead of `.watch` to avoid rebuilding when the list changes.
+    // It needs to that unpin cards remain until next search.
+    final pinnedCards = ref.read(pinnedCardsProvider);
 
     return Scaffold(
       floatingActionButton: const BackFab(),
@@ -90,7 +93,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
               ),
               const SizedBox(height: 24),
 
-              _buildWordField(theme),
+              _buildSearchInput(theme),
               const SizedBox(height: 16),
 
               Column(
@@ -114,7 +117,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
     );
   }
 
-  Widget _buildWordField(ThemeData theme) => Container(
+  Widget _buildSearchInput(ThemeData theme) => Container(
     decoration: BoxDecoration(
       color: theme.colorScheme.surface,
       borderRadius: BorderRadius.circular(16),

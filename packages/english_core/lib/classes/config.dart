@@ -1,3 +1,4 @@
+import 'dart:developer' show log;
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:dotenv/dotenv.dart';
@@ -6,7 +7,9 @@ class Config {
   // Lazy initialization of .env
   static final DotEnv _env = () {
     final scriptDir = p.dirname(Platform.script.toFilePath());
-    final envPath = p.normalize(p.join(scriptDir, '..', '.env'));
+    // .env file is located in the root of the project
+    final envPath = p.normalize(p.join(scriptDir, '..', '..', '.env'));
+    log('Env file loaded. Its path: $envPath');
     return DotEnv()..load([envPath]);
   }();
 

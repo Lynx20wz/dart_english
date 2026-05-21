@@ -23,13 +23,13 @@ class PinnedCardsNotifier extends Notifier<List<PronunciationCard>> {
       state = [...state, card];
   }
 
-  void remove(String transcription) => state = state
-      .where((card) => card.transcription != transcription)
+  void remove(PronunciationCard card) => state = state
+      .where((c) => c.transcription != card.transcription)
       .toList();
 
   void toggle(PronunciationCard card) {
     if (state.any((c) => c.transcription == card.transcription)) {
-      remove(card.transcription);
+      remove(card);
     } else
       add(card);
   }

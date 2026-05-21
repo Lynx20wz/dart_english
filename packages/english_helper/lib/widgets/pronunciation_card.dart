@@ -127,9 +127,10 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
             ),
             const Spacer(),
             IconButton(
-              onPressed: () => ref
-                  .read(pinnedCardsProvider.notifier)
-                  .remove(widget.transcription),
+              onPressed: () {
+                final notifier = ref.read(pinnedCardsProvider.notifier);
+                isPinned ? notifier.remove(widget) : notifier.add(widget);
+              },
               icon: const Icon(Icons.push_pin, size: 20),
               color: isPinned
                   ? theme.colorScheme.primary
