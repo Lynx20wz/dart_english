@@ -18,8 +18,10 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   late final FocusNode _focusNode;
   String? _transcript;
   List<int>? _pronunciation;
-
   bool _isLoading = false;
+
+  /// Returns the trimmed text from the word controller (search input).
+  String get _word => _wordController.text.trim();
 
   @override
   void initState() {
@@ -37,8 +39,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
   }
 
   Future<void> _searchTranscript() async {
-    final word = _wordController.text.trim();
-    if (word.isEmpty) return;
+    if (_word.isEmpty) return;
 
     setState(() {
       _isLoading = true;
@@ -47,7 +48,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
     });
 
     try {
-      final wordObj = Word.fromWord(word);
+      final wordObj = Word.fromWord(_word);
       await wordObj.setInfoFromWeb();
 
       if (mounted) {
@@ -100,6 +101,7 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
                 children: [
                   if (_transcript != null)
                     PronunciationCard(
+                      _word,
                       _transcript!,
                       pronunciation: _pronunciation!,
                     ),

@@ -7,25 +7,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PronunciationCard extends ConsumerStatefulWidget {
-  final String _transcription;
+  final String _word, _transcription;
   final List<int>? pronunciation;
   final bool autoplay;
 
   const PronunciationCard(
+    this._word,
     this._transcription, {
     this.pronunciation,
     this.autoplay = true,
     super.key,
   });
 
+  String get word => _word;
   String get transcription => _transcription;
 
   PronunciationCard copyWith({
+    String? word,
     String? transcription,
     List<int>? pronunciation,
     bool? autoplay,
     void Function(PronunciationCard card)? onPinned,
   }) => PronunciationCard(
+    word ?? _word,
     transcription ?? _transcription,
     pronunciation: pronunciation ?? this.pronunciation,
     autoplay: autoplay ?? this.autoplay,
@@ -115,14 +119,21 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
                   ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                widget._transcription,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontFamily: 'IPA',
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.primary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget._transcription,
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    widget._word,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.secondary,
+                    ),
+                  ),
+                ],
               ),
             ),
             const Spacer(),

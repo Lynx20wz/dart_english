@@ -13,8 +13,13 @@ Commit messages should follow this structure:
 
 - `<scope>`: <action in past tense> <description>
 - `<scope>`: `<initial_name>` -> `<updated_name>`
+
 - `<scope>`:
   1) <action in past tense> <description>
+  2) ...
+
+- `<scope>`:
+  1) ...
   2) ...
 ```
 
@@ -32,6 +37,7 @@ Where:
 - All paths and code objects (methods, classes, variables, types) must be wrapped in backticks: `WordPair`.
 - Keep commits atomic. If changes span multiple unrelated scopes, split them.
 - Use past tense for actions: `Added`, `Fixed`, `Moved`, `Updated`, `Overrode`.
+- List all single-line changes first, followed by a blank line. Then list multi-line changes, separating each block with a blank line.
 
 ## Example
 ```md
