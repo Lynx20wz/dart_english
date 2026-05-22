@@ -1,9 +1,8 @@
-import 'dart:io' show Process, Platform;
-
 import 'package:english_core/english_core.dart';
 import 'package:english_helper/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
+import 'package:url_launcher/url_launcher.dart' show launchUrl;
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -13,11 +12,12 @@ class HomePageScreen extends StatefulWidget {
 }
 
 class _HomePageScreenState extends State<HomePageScreen> {
-  String _topMsg = '';
+  String _formatStatusMsg = '';
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      toastification.dismissAll(delayForAnimation: false);
       if (mounted) _showUpdateToast(context);
     });
 
@@ -26,7 +26,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         children: [
           Positioned(
             top: 16,
-            child: Text(_topMsg, textAlign: TextAlign.center),
+            child: Text(_formatStatusMsg, textAlign: TextAlign.center),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -97,15 +97,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
               ),
               IconButton(
                 tooltip: 'Open dictionary folder',
-                onPressed: () {
-                  final cmd = switch (Platform.operatingSystem) {
-                    'windows' => 'explorer',
-                    'linux' => 'xdg-open',
-                    _ => throw UnsupportedError('Unsupported platform'),
-                  };
-
-                  Process.run(cmd, [Config.dictionaryPath]);
-                },
+                onPressed: () =>
+                    launchUrl(Uri.parse('file://${Config.dictionaryPath}')),
                 icon: Icon(
                   Icons.folder,
                   color: Theme.of(context).colorScheme.primary,
@@ -145,7 +138,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     final totalCount = files.length;
     await for (final (i, file) in parser.formatAllFiles(files: files)) {
       setState(
-        () => _topMsg = '(${i + 1}/$totalCount) ${file.word.mainPair.original}',
+        () => _formatStatusMsg =
+            '(${i + 1}/$totalCount) ${file.word.mainPair.original}',
       );
     }
   }
