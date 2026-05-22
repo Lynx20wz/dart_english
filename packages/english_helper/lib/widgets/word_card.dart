@@ -26,7 +26,7 @@ class WordWidget extends StatelessWidget {
               style: theme.textTheme.titleMedium,
             ),
             subtitle: Text(
-              word.mainPair.translate!,
+              word.mainPair.translate ?? '-',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.secondary,
               ),

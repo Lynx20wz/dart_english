@@ -78,10 +78,17 @@ class Word {
 
     final uri = Uri.parse('$baseUrl/${mainPair.original}');
     final response = await get(uri);
-    final json = jsonDecode(response.body)[0];
+    final json = jsonDecode(response.body);
+
+    if (response.statusCode == 404) {
+      if (json['title'] == 'No Definitions Found') {
+        throw Exception('Word not found');
+      }
+      throw Exception('API returned 404');
+    }
 
     while (transcript == null || pronunciationAudio == null) {
-      for (final phonetic in json['phonetics']) {
+      for (final phonetic in json[0]['phonetics']) {
         transcript ??= phonetic['text']?.replaceAll('/', '');
         final pronunciationLink = phonetic['audio'] as String?;
 

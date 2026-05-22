@@ -18,7 +18,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       toastification.dismissAll(delayForAnimation: false);
-      if (mounted) _showUpdateToast(context);
+      if (mounted && ModalRoute.of(context)?.isCurrent == true)
+        _showUpdateToast(context);
     });
 
     return Scaffold(

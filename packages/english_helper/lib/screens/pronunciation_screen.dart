@@ -4,6 +4,7 @@ import 'package:english_helper/widgets/back_fab.dart';
 import 'package:english_helper/widgets/pronunciation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:toastification/toastification.dart';
 
 class PronunciationScreen extends ConsumerStatefulWidget {
   const PronunciationScreen({super.key});
@@ -65,11 +66,15 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            duration: const Duration(seconds: 3),
-          ),
+        toastification.show(
+          title: Text('Get info error'),
+          description: Text(e.toString()),
+          alignment: .bottomCenter,
+          backgroundColor: Theme.of(context).colorScheme.onSurface,
+          borderSide: .none,
+          type: .warning,
+          showIcon: false,
+          autoCloseDuration: Duration(seconds: 3),
         );
       }
     } finally {
