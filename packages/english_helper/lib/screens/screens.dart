@@ -15,7 +15,7 @@ enum Screen {
   const Screen(this.path);
 }
 
-void openScreen(BuildContext context, Screen screen) {
+void openScreen(BuildContext context, Screen screen, [dynamic arg]) {
   toastification.dismissAll();
-  Navigator.pushNamed(context, screen.path);
+  Navigator.pushNamed(context, screen.path, arguments: arg);
 }

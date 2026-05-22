@@ -13,9 +13,12 @@ class WordsListScreen extends ConsumerWidget {
     final words = ref.watch(wordsProvider);
 
     return Scaffold(
-      body: ListView.builder(
-        itemCount: words.length,
-        itemBuilder: (context, index) => WordWidget(words[index]),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+        child: ListView.builder(
+          itemCount: words.length,
+          itemBuilder: (context, index) => WordWidget(words[index]),
+        ),
       ),
       floatingActionButton: BackFab(),
     );

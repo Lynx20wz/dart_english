@@ -29,6 +29,12 @@ class _PronunciationScreenState extends ConsumerState<PronunciationScreen> {
 
     _wordController = TextEditingController();
     _focusNode = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final word = ModalRoute.of(context)?.settings.arguments as String?;
+      if (word != null) _wordController.text = word;
+      _searchTranscript();
+    });
   }
 
   @override
