@@ -44,6 +44,12 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
   final _player = AudioPlayer();
 
   bool _isPlaying = false;
+  late bool _isPinned;
+  late bool _isAdded;
+
+  late Color bgColor;
+  late Color fgColor;
+  late Color secondaryTextColor;
 
   @override
   void initState() {
@@ -79,18 +85,37 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
 
   @override
   Widget build(BuildContext context) {
+    _isAdded = ref.watch(
+      wordsProvider.select(
+        (words) => words.any((word) => word.mainPair.original == widget.word),
+      ),
+    );
+
+    _isPinned = ref.watch(
+      pinnedCardsProvider.select(
+        (cards) =>
+            cards.any((card) => card.transcription == widget.transcription),
+      ),
+    );
+
     final theme = Theme.of(context);
-    final isPinned = ref
-        .watch(pinnedCardsProvider)
-        .any((card) => card.transcription == widget.transcription);
+
+    bgColor = _isAdded ? theme.colorScheme.primary : theme.colorScheme.surface;
+    fgColor = _isAdded
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.onSurface;
+    secondaryTextColor = fgColor.withValues(alpha: 0.7);
 
     return Card(
       margin: EdgeInsets.zero,
+      color: bgColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: theme.colorScheme.primary.withValues(alpha: 0.3),
-          width: 1,
+          color: _isAdded
+              ? Colors.transparent
+              : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+          width: 2,
         ),
       ),
       child: Padding(
@@ -98,58 +123,71 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            widget.pronunciation != null && widget.pronunciation!.isNotEmpty
-                ? IconButton(
-                    onPressed: playPronunciation,
-                    icon: _isPlaying
-                        ? const Icon(Icons.pause, size: 20)
-                        : const Icon(Icons.play_arrow, size: 20),
-                    color: theme.colorScheme.onPrimary,
-                    style: IconButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  )
-                : Icon(
-                    Icons.close,
-                    size: 20,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+            _buildPlayButton(theme),
             const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget._transcription,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    widget._word,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.secondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildTextColumn(theme),
             const Spacer(),
-            IconButton(
-              onPressed: () {
-                final notifier = ref.read(pinnedCardsProvider.notifier);
-                isPinned ? notifier.remove(widget) : notifier.add(widget);
-              },
-              icon: const Icon(Icons.push_pin, size: 20),
-              color: isPinned
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+            _buildPinButton(theme),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildPlayButton(ThemeData theme) {
+    if (widget.pronunciation == null || widget.pronunciation!.isEmpty) {
+      return Icon(
+        Icons.close,
+        size: 20,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+      );
+    }
+
+    return IconButton(
+      onPressed: playPronunciation,
+      icon: Icon(
+        _isPlaying ? Icons.pause : Icons.play_arrow,
+        size: 20,
+        color: fgColor,
+      ),
+      style: IconButton.styleFrom(
+        backgroundColor: bgColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  Widget _buildTextColumn(ThemeData theme) => Expanded(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget._transcription,
+          style: theme.textTheme.titleLarge?.copyWith(color: fgColor),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          widget._word,
+          style: theme.textTheme.bodyLarge?.copyWith(color: secondaryTextColor),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildPinButton(ThemeData theme) => IconButton(
+    highlightColor: fgColor.withValues(alpha: 0.3),
+    hoverColor: fgColor.withValues(alpha: 0.2),
+    onPressed: () {
+      final notifier = ref.read(pinnedCardsProvider.notifier);
+      notifier.toggle(widget);
+    },
+    icon: Icon(
+      _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+      size: 20,
+
+      color: _isAdded
+          ? theme.colorScheme.onPrimary
+          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+    ),
+  );
 }
