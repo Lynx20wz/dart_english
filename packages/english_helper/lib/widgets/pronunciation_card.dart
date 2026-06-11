@@ -45,6 +45,8 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
 
   bool _isPlaying = false;
   late bool _isPinned;
+
+  /// Whether the card is added to the user's dictionary.
   late bool _isAdded;
 
   late Color bgColor;

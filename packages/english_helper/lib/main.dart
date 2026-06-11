@@ -17,6 +17,7 @@ class App extends StatelessWidget {
         '/words': (context) => const WordsListScreen(),
         '/pronunciation': (context) => const PronunciationScreen(),
       },
+
       // debugShowCheckedModeBanner: false,
       title: 'English helper',
       theme: ThemeData(

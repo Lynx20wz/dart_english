@@ -16,11 +16,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      toastification.dismissAll(delayForAnimation: false);
-      if (mounted && ModalRoute.of(context)?.isCurrent == true)
-        _showUpdateToast(context);
-    });
+    // Temp
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   toastification.dismissAll(delayForAnimation: false);
+    //   if (mounted && ModalRoute.of(context)?.isCurrent == true)
+    //     _showUpdateToast(context);
+    // });
 
     return Scaffold(
       body: Stack(
@@ -81,7 +82,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           onPressed: () => openScreen(context, .pronunciation),
                           icon: Icon(Icons.audiotrack, size: 28),
                           label: Text(
-                            'Get pronunciation',
+                            'Word search',
                             style: TextStyle(fontSize: 18),
                           ),
                           style: OutlinedButton.styleFrom(

@@ -74,7 +74,7 @@ class Word {
       pronunciationAudio != null;
 
   Future<void> setInfoFromWeb() async {
-    if (isFull) return; // to avoid spamming the API
+    if (isFull) return;
 
     final uri = Uri.parse('$baseUrl/${mainPair.original}');
     final response = await get(uri);
