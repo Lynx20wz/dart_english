@@ -79,7 +79,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         SizedBox(height: 16),
 
                         TextButton.icon(
-                          onPressed: () => openScreen(context, .pronunciation),
+                          onPressed: () => openScreen(context, .search),
                           icon: Icon(Icons.audiotrack, size: 28),
                           label: Text(
                             'Word search',

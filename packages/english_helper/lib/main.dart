@@ -15,7 +15,7 @@ class App extends StatelessWidget {
     child: MaterialApp(
       routes: {
         '/words': (context) => const WordsListScreen(),
-        '/pronunciation': (context) => const PronunciationScreen(),
+        '/search': (context) => const SearchScreen(),
       },
 
       // debugShowCheckedModeBanner: false,

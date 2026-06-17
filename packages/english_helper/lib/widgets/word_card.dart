@@ -38,7 +38,7 @@ class WordWidget extends StatelessWidget {
                   icon: const Icon(Icons.volume_up),
                   onPressed: () => openScreen(
                     context,
-                    Screen.pronunciation,
+                    Screen.search,
                     word.mainPair.original,
                   ),
                   color: theme.colorScheme.outline,

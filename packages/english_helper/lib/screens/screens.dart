@@ -2,12 +2,12 @@ import 'package:flutter/material.dart' show BuildContext, Navigator;
 import 'package:toastification/toastification.dart' show toastification;
 
 export 'homepage.dart';
-export 'pronunciation_screen.dart';
+export 'search_screen.dart';
 export 'words_list.dart';
 
 enum Screen {
   homepage('/homepage'),
-  pronunciation('/pronunciation'),
+  search('/search'),
   words('/words');
 
   final String path;
