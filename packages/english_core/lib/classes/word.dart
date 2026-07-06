@@ -99,6 +99,7 @@ class Word {
           pronunciationAudio = response.bodyBytes;
         }
       }
+      break;
     }
   }
 }

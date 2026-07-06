@@ -53,6 +53,9 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
   late Color fgColor;
   late Color secondaryTextColor;
 
+  bool get _isAudiable =>
+      widget.pronunciation == null || widget.pronunciation!.isEmpty;
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +69,7 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
   }
 
   Future<void> playPronunciation() async {
-    if (widget.pronunciation == null || widget.pronunciation!.isEmpty) return;
+    if (_isAudiable) return;
 
     try {
       if (_isPlaying) {
@@ -136,28 +139,14 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
     );
   }
 
-  Widget _buildPlayButton(ThemeData theme) {
-    if (widget.pronunciation == null || widget.pronunciation!.isEmpty) {
-      return Icon(
-        Icons.close,
-        size: 20,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-      );
-    }
-
-    return IconButton(
-      onPressed: playPronunciation,
-      icon: Icon(
-        _isPlaying ? Icons.pause : Icons.play_arrow,
-        size: 20,
-        color: fgColor,
-      ),
-      style: IconButton.styleFrom(
-        backgroundColor: bgColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
+  Widget _buildPlayButton(ThemeData theme) => IconButton(
+    onPressed: _isAudiable ? null : playPronunciation,
+    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, size: 20),
+    style: IconButton.styleFrom(
+      backgroundColor: bgColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ),
+  );
 
   Widget _buildTextColumn(ThemeData theme) => Expanded(
     child: Column(

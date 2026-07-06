@@ -107,7 +107,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   PronunciationCard(
                     _word,
                     _transcript!,
-                    pronunciation: _pronunciation!,
+                    pronunciation: _pronunciation,
                   ),
 
                 if (pinnedCards.isNotEmpty)
