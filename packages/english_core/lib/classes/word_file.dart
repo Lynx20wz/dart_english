@@ -18,7 +18,7 @@ class WordFile {
   Map<String, String?> get props => organize
       ? {
           'en_word': word.mainPair.original,
-          'ru_word': word.mainPair.translate,
+          'ru_word': word.mainPair.translation,
           'transcript': word.transcript,
           'en_example': word.enExample,
           'ru_example': word.ruExample,
@@ -88,7 +88,7 @@ class WordFile {
     // Main word
     buffer.write('\n`${word.mainPair.original}');
     if (word.transcript != null) buffer.write(' [${word.transcript}]');
-    buffer.write('` - ${word.mainPair.translate}');
+    buffer.write('` - ${word.mainPair.translation}');
 
     // Extra pairs
     for (final pair in word.extraPairs ?? []) {

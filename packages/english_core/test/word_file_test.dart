@@ -27,7 +27,7 @@ String buildExpected(WordFile wordFile) {
       :ruExample,
       :pronunciationAudio,
       :irregularVerb,
-      mainPair: WordPair(:original, :translate),
+      mainPair: WordPair(:original, translation:translate),
       extraPairs: extraWordPairs,
     ),
     :tags,
@@ -36,7 +36,7 @@ String buildExpected(WordFile wordFile) {
   final mainLine =
       '`$original${transcript != null ? " [$transcript]" : ""}`${translate != null ? " - $translate" : ""}';
   final extraPairsLine = extraWordPairs?.isNotEmpty ?? false
-      ? '\n${extraWordPairs!.map((pair) => '`${pair.original}` - ${pair.translate}').join('\n')}'
+      ? '\n${extraWordPairs!.map((pair) => '`${pair.original}` - ${pair.translation}').join('\n')}'
       : '';
   final irregularLine = irregularVerb != null
       ? '\n\n`${irregularVerb.firstForm}` - `${irregularVerb.secondForm}` - `${irregularVerb.thirdForm}`'

@@ -4,30 +4,32 @@ import 'package:http/http.dart' show get;
 
 const baseUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en';
 
+enum PartOfSpeech { noun, verb, adjective, adverb }
+
 class WordPair {
   final String original;
-  final String? translate;
+  final String? translation;
 
   /// Creates a [WordPair] with trimmed and lowercased [original] and [translate].
   /// This may be provide only one word, then [translate] will be `null`.
   WordPair(String original, [String? translate])
     : original = original.trim().toLowerCase(),
-      translate = translate?.trim().toLowerCase();
+      translation = translate?.trim().toLowerCase();
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is WordPair &&
           original == other.original &&
-          translate == other.translate;
+          translation == other.translation;
 
   @override
-  int get hashCode => original.hashCode ^ (translate?.hashCode ?? 0);
+  int get hashCode => original.hashCode ^ (translation?.hashCode ?? 0);
 
   @override
-  String toString() => '$original - $translate';
+  String toString() => '$original - $translation';
 
-  bool get isFull => original.isNotEmpty && (translate?.isNotEmpty ?? false);
+  bool get isFull => original.isNotEmpty && (translation?.isNotEmpty ?? false);
 }
 
 class IrregularVerb {
@@ -44,6 +46,7 @@ class Word {
   final List<WordPair>? extraPairs;
   final String? enExample, ruExample;
   final IrregularVerb? irregularVerb;
+  final PartOfSpeech? partOfSpeech;
   late String? transcript;
   late List<int>? pronunciationAudio;
 
@@ -55,6 +58,7 @@ class Word {
     this.transcript,
     this.irregularVerb,
     this.pronunciationAudio,
+    this.partOfSpeech,
   });
 
   /// Syntactic sugar for `Word(WordPair(original))`.
