@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:english_core/classes/classes.dart';
 import 'package:path/path.dart' as p;
@@ -10,7 +11,9 @@ class FileParser {
   FileParser(this.file);
 
   WordFile fileParse() {
-    final organize = _content.contains('organize: true');
+    final props = _getProps();
+
+    final organize = props['organize'] == 'true';
 
     if (!organize) {
       return WordFile(
@@ -32,14 +35,27 @@ class FileParser {
       irregularVerb: _getIrregularVerb(),
       pronunciationAudio: _getPronunciationAudio(),
       transcription: _getTranscript(),
+      partOfSpeech:
+          props['part_of_speech'] != null && props['part_of_speech'] != 'null'
+          ? PartOfSpeech.values.byName(props['part_of_speech']!)
+          : null,
     );
 
     return WordFile(file, word, tags: tags);
   }
 
+  // Regex check: https://regex101.com/r/o6TpPs
+  Map<String, dynamic> _getProps() => Map.fromEntries(
+    RegExp(r'^(\S+):\s*(.*)$', multiLine: true)
+        .allMatches(_content)
+        .map((match) => MapEntry(match.group(1)!, match.group(2)!))
+        .toList(),
+  );
+
+  // Regex check: https://regex101.com/r/3ibZA1
   List<WordPair> _getWordPairs() =>
       RegExp(
-            r'^`(.*?)(?: \[.*])?`(?:.*)?[-—] (?:\[\[)?(?:.*\|)?(.*[^]\n]?)(?:]])?',
+            r'^`(.*?)(?: \[.*])?`(?:.*)?[-—] (?:\[\[)?(?:.*\|)?([^\]\n]*)(?:]])?',
             multiLine: true,
           )
           .allMatches(_content)

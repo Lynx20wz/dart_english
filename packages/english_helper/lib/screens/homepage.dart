@@ -1,27 +1,29 @@
 import 'package:english_core/english_core.dart';
+import 'package:english_helper/provider.dart' show wordsProvider, wordProvider;
 import 'package:english_helper/screens/screens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart' show launchUrl;
 
-class HomePageScreen extends StatefulWidget {
+class HomePageScreen extends ConsumerStatefulWidget {
   const HomePageScreen({super.key});
 
   @override
-  State<HomePageScreen> createState() => _HomePageScreenState();
+  ConsumerState<HomePageScreen> createState() => _HomePageScreenState();
 }
 
-class _HomePageScreenState extends State<HomePageScreen> {
+class _HomePageScreenState extends ConsumerState<HomePageScreen> {
   String _formatStatusMsg = '';
 
   @override
   Widget build(BuildContext context) {
-    // Temp
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   toastification.dismissAll(delayForAnimation: false);
-    //   if (mounted && ModalRoute.of(context)?.isCurrent == true)
-    //     _showUpdateToast(context);
-    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      toastification.dismissAll(delayForAnimation: false);
+      if (mounted && ModalRoute.of(context)?.isCurrent == true)
+        _showUpdateToast(context);
+    });
 
     return Scaffold(
       body: Stack(
@@ -117,7 +119,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   void _showUpdateToast(BuildContext context) => toastification.show(
     title: Text(
-      'Update vocabulary',
+      'Fill database',
       style: Theme.of(context).textTheme.titleMedium,
     ),
     alignment: Alignment.topCenter,
@@ -127,18 +129,31 @@ class _HomePageScreenState extends State<HomePageScreen> {
     closeButton: ToastCloseButton(
       buttonBuilder: (_, onClose) => IconButton(
         icon: Icon(Icons.refresh),
-        onPressed: () => _formatAllFiles(),
+        onPressed: _addWordsIntoDatabase,
         padding: .zero,
       ),
     ),
     showIcon: false,
   );
 
+  Future<void> _addWordsIntoDatabase() async {
+    final words = ref.read(wordsProvider);
+    if (words.isEmpty) return;
+
+    final provider = await ref.read(wordProvider.future);
+    final res = await provider.fillDatabase(words);
+
+    print(res);
+  }
+
   void _formatAllFiles() async {
     final parser = DictParser();
     final files = parser.parseAllFiles();
     final totalCount = files.length;
-    await for (final (i, file) in parser.formatAllFiles(files: files)) {
+    await for (final (i, file) in parser.formatAllFiles(
+      files: files,
+      loadWebInfo: true,
+    )) {
       setState(
         () => _formatStatusMsg =
             '(${i + 1}/$totalCount) ${file.word.mainPair.original}',

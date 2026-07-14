@@ -22,6 +22,7 @@ class WordFile {
           'transcript': word.transcription,
           'en_example': word.originalExample,
           'ru_example': word.translationExample,
+          'part_of_speech': word.partOfSpeech?.name,
           'organize': 'true',
         }
       : {'organize': 'false'};

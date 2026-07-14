@@ -34,25 +34,27 @@ class _WordsListScreenState extends ConsumerState<WordsListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final words = ref.watch(filteredWordsProvider);
-
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
-        child: Column(
-          children: [
-            SearchInput(wordController: _searchController),
-            Expanded(
-              child: ListView.builder(
-                itemCount: words.length,
-                itemBuilder: (context, index) => WordWidget(words[index]),
-              ),
+  Widget build(BuildContext context) => Scaffold(
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+      child: ref
+          .watch(wordsDBProvider)
+          .when(
+            data: (words) => Column(
+              children: [
+                SearchInput(wordController: _searchController),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: words.length,
+                    itemBuilder: (context, index) => WordWidget(words[index]),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: BackFab(),
-    );
-  }
+            loading: () => Center(child: CircularProgressIndicator()),
+            error: (e, stack) => Center(child: Text('Error: $e\n$stack')),
+          ),
+    ),
+    floatingActionButton: BackFab(),
+  );
 }

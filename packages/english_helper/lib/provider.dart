@@ -1,6 +1,16 @@
 import 'package:english_core/english_core.dart' show Word, DictParser;
+import 'package:english_helper/db.dart';
 import 'package:english_helper/widgets/search_card.dart';
+import 'package:english_helper/wordProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite/sqflite.dart' show Database;
+
+final dbProvider = FutureProvider<Database>((ref) => createDatabase());
+
+final wordProvider = FutureProvider<WordProvider>((ref) async {
+  final db = await ref.watch(dbProvider.future);
+  return WordProvider(db);
+});
 
 final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(
   SearchQueryNotifier.new,
@@ -13,12 +23,14 @@ class SearchQueryNotifier extends Notifier<String> {
   void setQuery(String query) => state = query;
 }
 
+@deprecated
 final wordsProvider = Provider<List<Word>>(
   (_) =>
       DictParser().parseAllWords()
         ..sort((a, b) => a.mainPair.original.compareTo(b.mainPair.original)),
 );
 
+@deprecated
 final filteredWordsProvider = Provider<List<Word>>((ref) {
   final words = ref.watch(wordsProvider);
   final query = ref.watch(searchQueryProvider).toLowerCase();
@@ -27,6 +39,12 @@ final filteredWordsProvider = Provider<List<Word>>((ref) {
   return words
       .where((w) => w.mainPair.original.toLowerCase().startsWith(query))
       .toList();
+});
+
+final wordsDBProvider = FutureProvider<List<Word>>((ref) async {
+  final db = await ref.watch(dbProvider.future);
+  final query = ref.watch(searchQueryProvider);
+  return WordProvider(db).getWords(query);
 });
 
 final pinnedCardsProvider =

@@ -49,7 +49,7 @@ void main() {
     final word = Word(WordPair('hello', 'привет'));
     await word.setInfoFromWeb();
 
-    expect(word.transcript, 'həˈləʊ');
+    expect(word.transcription, 'həˈləʊ');
     expect(word.pronunciationAudio, isNotNull);
   });
 }
