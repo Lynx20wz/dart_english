@@ -1,6 +1,6 @@
 name: english_helper
 description: Flutter application for English-Russian dictionary.
-version: 0.1.6
+version: 0.2.0
 repository: https://github.com/Lynx20wz/dart_english
 publish_to: none
 
