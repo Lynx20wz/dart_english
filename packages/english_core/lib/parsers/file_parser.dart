@@ -26,12 +26,12 @@ class FileParser {
 
     final word = Word(
       mainPair,
-      extraPairs: extra,
-      enExample: enExample,
-      ruExample: ruExample,
+      extraPairs: extra.isNotEmpty ? extra : null,
+      originalExample: enExample,
+      translationExample: ruExample,
       irregularVerb: _getIrregularVerb(),
       pronunciationAudio: _getPronunciationAudio(),
-      transcript: _getTranscript(),
+      transcription: _getTranscript(),
     );
 
     return WordFile(file, word, tags: tags);
@@ -76,15 +76,15 @@ class FileParser {
     return (lines[ruLineIndex - 1], ruExample);
   }
 
-  List<int> _getPronunciationAudio() {
+  Uint8List? _getPronunciationAudio() {
     final captures = RegExp(r'!\[\[(.+?)\.mp3]]').allMatches(_content).toList();
-    if (captures.isEmpty) return [];
+    if (captures.isEmpty) return null;
 
     final audioFile = File(
       'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/${captures.first.group(1)}.mp3',
     );
 
-    return audioFile.existsSync() ? audioFile.readAsBytesSync() : [];
+    return audioFile.existsSync() ? audioFile.readAsBytesSync() : null;
   }
 
   List<String> _splitContentByLines(String content) => content

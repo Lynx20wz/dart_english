@@ -53,7 +53,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
       if (mounted) {
         setState(() {
-          _transcript = wordObj.transcript;
+          _transcript = wordObj.transcription;
           _pronunciation = wordObj.pronunciationAudio;
         });
       }

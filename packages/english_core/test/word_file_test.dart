@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:english_core/english_core.dart';
 import 'package:test/test.dart';
@@ -11,10 +12,10 @@ Word buildFullWord() => Word(
     WordPair('incoming', 'входящий'),
     WordPair('upcoming', 'предстоящий'),
   ],
-  transcript: 'kʌm',
-  enExample: 'I came too early',
-  ruExample: 'Я пришёл слишком рано',
-  pronunciationAudio: [0, 0, 0],
+  transcription: 'kʌm',
+  originalExample: 'I came too early',
+  translationExample: 'Я пришёл слишком рано',
+  pronunciationAudio: Uint8List.fromList([0, 0, 0]),
   irregularVerb: const IrregularVerb('come', 'came', 'come'),
 );
 
@@ -22,12 +23,12 @@ String buildExpected(WordFile wordFile) {
   // deconstruction
   final WordFile(
     word: Word(
-      :transcript,
-      :enExample,
-      :ruExample,
+      transcription: transcript,
+      originalExample: enExample,
+      translationExample: ruExample,
       :pronunciationAudio,
       :irregularVerb,
-      mainPair: WordPair(:original, translation:translate),
+      mainPair: WordPair(:original, translation: translate),
       extraPairs: extraWordPairs,
     ),
     :tags,
@@ -83,7 +84,7 @@ void main() {
     test('with transcript', () {
       final wordFile = WordFile(
         testFile,
-        Word(WordPair('test', 'тест'), transcript: 'test'),
+        Word(WordPair('test', 'тест'), transcription: 'test'),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
     });
@@ -93,8 +94,8 @@ void main() {
         testFile,
         Word(
           WordPair('test', 'тест'),
-          enExample: 'I wrote some tests',
-          ruExample: 'Я написал несколько тестов',
+          originalExample: 'I wrote some tests',
+          translationExample: 'Я написал несколько тестов',
         ),
       );
       expect(wordFile.toString(), buildExpected(wordFile));
@@ -103,7 +104,10 @@ void main() {
     test('with pronunciation audio', () {
       final wordFile = WordFile(
         testFile,
-        Word(WordPair('test', 'тест'), pronunciationAudio: [0, 0, 0]),
+        Word(
+          WordPair('test', 'тест'),
+          pronunciationAudio: Uint8List.fromList([0, 0, 0]),
+        ),
       );
 
       expect(wordFile.toString(), buildExpected(wordFile));

@@ -19,9 +19,9 @@ class WordFile {
       ? {
           'en_word': word.mainPair.original,
           'ru_word': word.mainPair.translation,
-          'transcript': word.transcript,
-          'en_example': word.enExample,
-          'ru_example': word.ruExample,
+          'transcript': word.transcription,
+          'en_example': word.originalExample,
+          'ru_example': word.translationExample,
           'organize': 'true',
         }
       : {'organize': 'false'};
@@ -87,12 +87,12 @@ class WordFile {
 
     // Main word
     buffer.write('\n`${word.mainPair.original}');
-    if (word.transcript != null) buffer.write(' [${word.transcript}]');
+    if (word.transcription != null) buffer.write(' [${word.transcription}]');
     buffer.write('` - ${word.mainPair.translation}');
 
     // Extra pairs
-    for (final pair in word.extraPairs ?? []) {
-      buffer.write('\n`${pair.original}` - ${pair.translate}');
+    for (final WordPair pair in word.extraPairs ?? []) {
+      buffer.write('\n`${pair.original}` - ${pair.translation}');
     }
 
     // Irregular verb
@@ -107,10 +107,14 @@ class WordFile {
 
     // Examples
     buffer.write(
-      word.enExample != null ? '\n\n${word.enExample!.capitalize()}\n' : '',
+      word.originalExample != null
+          ? '\n\n${word.originalExample!.capitalize()}\n'
+          : '',
     );
     buffer.write(
-      word.ruExample != null ? '(${word.ruExample!.capitalize()})' : '',
+      word.translationExample != null
+          ? '(${word.translationExample!.capitalize()})'
+          : '',
     );
 
     buffer.writeln();

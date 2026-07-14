@@ -4,7 +4,18 @@ import 'package:http/http.dart' show get;
 
 const baseUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en';
 
-enum PartOfSpeech { noun, verb, adjective, adverb }
+enum PartOfSpeech {
+  noun,
+  pronoun,
+  verb,
+  adjective,
+  adverb,
+  conjunction,
+  preposition;
+
+  factory PartOfSpeech.fromString(String name) =>
+      values.firstWhere((e) => e.name == name);
+}
 
 class WordPair {
   final String original;
@@ -30,6 +41,15 @@ class WordPair {
   String toString() => '$original - $translation';
 
   bool get isFull => original.isNotEmpty && (translation?.isNotEmpty ?? false);
+
+  Map<String, dynamic> toMap() => {
+    'original': original,
+    'translation': translation,
+  };
+
+  WordPair.fromMap(Map<String, dynamic> map)
+    : original = map['original'],
+      translation = map['translation'];
 }
 
 class IrregularVerb {
@@ -44,18 +64,18 @@ class IrregularVerb {
 class Word {
   final WordPair mainPair;
   final List<WordPair>? extraPairs;
-  final String? enExample, ruExample;
+  final String? originalExample, translationExample;
   final IrregularVerb? irregularVerb;
-  final PartOfSpeech? partOfSpeech;
-  late String? transcript;
-  late List<int>? pronunciationAudio;
+  late PartOfSpeech? partOfSpeech;
+  late String? transcription;
+  late Uint8List? pronunciationAudio;
 
   Word(
     this.mainPair, {
     this.extraPairs,
-    this.enExample,
-    this.ruExample,
-    this.transcript,
+    this.originalExample,
+    this.translationExample,
+    this.transcription,
     this.irregularVerb,
     this.pronunciationAudio,
     this.partOfSpeech,
@@ -70,40 +90,137 @@ class Word {
   factory Word.fromWords(String original, String translate) =>
       Word(WordPair(original, translate));
 
+  factory Word.fromMap(Map<String, dynamic> map) => Word(
+    WordPair(map['original'] as String, map['translation'] as String?),
+    originalExample: map['original_example'] as String?,
+    translationExample: map['translation_example'] as String?,
+    transcription: map['transcription'] as String?,
+    pronunciationAudio: map['pronunciationAudio'] as Uint8List?,
+    partOfSpeech: map['partOfSpeech'] == null
+        ? null
+        : PartOfSpeech.fromString(map['partOfSpeech'] as String),
+  );
+
+  Map<String, dynamic> toMap() => {
+    'original': mainPair.original,
+    'translation': mainPair.translation,
+    'original_example': originalExample,
+    'translation_example': translationExample,
+    'trancsription': transcription,
+    'pronunciationAudio': pronunciationAudio,
+    'partOfSpeech': partOfSpeech?.name,
+  };
+
+  @override
+  String toString() => 'Word(${mainPair.original} [$transcription])';
+
   bool get isFull =>
       mainPair.isFull &&
-      enExample != null &&
-      ruExample != null &&
-      transcript != null &&
-      pronunciationAudio != null;
+      originalExample != null &&
+      translationExample != null &&
+      transcription != null &&
+      pronunciationAudio != null &&
+      partOfSpeech != null;
 
-  Future<void> setInfoFromWeb() async {
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Word &&
+          mainPair == other.mainPair &&
+          originalExample == other.originalExample &&
+          translationExample == other.translationExample &&
+          transcription == other.transcription &&
+          irregularVerb == other.irregularVerb &&
+          partOfSpeech == other.partOfSpeech);
+
+  @override
+  int get hashCode => Object.hash(
+    mainPair,
+    originalExample,
+    translationExample,
+    transcription,
+    irregularVerb,
+    partOfSpeech,
+  );
+
+  Future<void> setInfoFromWeb({int maxRetries = 3}) async {
     if (isFull) return;
 
-    final uri = Uri.parse('$baseUrl/${mainPair.original}');
-    final response = await get(uri);
-    final json = jsonDecode(response.body);
+    final encodedWord = Uri.encodeComponent(mainPair.original);
+    final uri = Uri.parse('$baseUrl/$encodedWord');
 
-    if (response.statusCode == 404) {
-      if (json['title'] == 'No Definitions Found') {
-        throw Exception('Word not found');
-      }
-      throw Exception('API returned 404');
-    }
+    int attempts = 0;
+    while (attempts < maxRetries) {
+      try {
+        final response = await get(uri);
 
-    while (transcript == null || pronunciationAudio == null) {
-      for (final phonetic in json[0]['phonetics']) {
-        transcript ??= phonetic['text']?.replaceAll('/', '');
-        final pronunciationLink = phonetic['audio'] as String?;
+        if (response.statusCode == 404) {
+          print('⚠️ Word not found: ${mainPair.original}');
+          return;
+        }
 
-        if (pronunciationLink != null && pronunciationLink.isNotEmpty) {
-          final response = await get(
-            Uri.parse(pronunciationLink),
-          ).then((value) => value);
-          pronunciationAudio = response.bodyBytes;
+        if (response.statusCode == 429) {
+          attempts++;
+          if (attempts >= maxRetries) {
+            print(
+              '❌ Rate limit exceeded. Max retries reached for: ${mainPair.original}',
+            );
+            return;
+          }
+          print(
+            '⏳ Rate limit exceeded. Waiting 10 seconds... (Attempt $attempts/$maxRetries)',
+          );
+
+          await Future.delayed(const Duration(seconds: 10));
+          continue;
+        }
+
+        if (response.statusCode != 200) {
+          print('❌ API returned unexpected status: ${response.statusCode}');
+          return;
+        }
+
+        final List<dynamic> json;
+        try {
+          json = jsonDecode(response.body) as List<dynamic>;
+        } on FormatException {
+          print('❌ Failed to parse JSON for: ${mainPair.original}');
+          return;
+        }
+
+        if (json.isEmpty) return;
+
+        final firstEntry = json[0] as Map<String, dynamic>;
+
+        final phonetics = firstEntry['phonetics'] as List<dynamic>? ?? [];
+        for (final phonetic in phonetics) {
+          final text = phonetic['text'] as String?;
+          if (transcription == null && text != null && text.isNotEmpty) {
+            transcription = text.replaceAll(RegExp(r'[/\[\]]'), '').trim();
+          }
+        }
+
+        final meanings = firstEntry['meanings'] as List<dynamic>? ?? [];
+        if (meanings.isNotEmpty) {
+          final firstMeaning = meanings[0] as Map<String, dynamic>;
+          final posString = firstMeaning['partOfSpeech'] as String?;
+
+          if (posString != null) {
+            partOfSpeech = PartOfSpeech.fromString(posString);
+          }
+        }
+
+        break;
+      } catch (e) {
+        attempts++;
+        print('⚠️ Network error for ${mainPair.original}: $e');
+
+        if (attempts < maxRetries) {
+          await Future.delayed(const Duration(seconds: 5));
+        } else {
+          print('❌ Max retries reached due to network errors.');
         }
       }
-      break;
     }
   }
 }
