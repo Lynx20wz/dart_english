@@ -24,13 +24,18 @@ class FileParser {
     }
 
     final List<String> tags = _getTags();
-    final (enExample, ruExample) = _getExample();
-    final [mainPair, ...extra] = _getWordPairs();
+    final (enExample, ruExample) = _getExamples();
+    final [rawMainPair, ...extra] = _getWordPairs();
+    final (translation, note) = _separateTranslationAndNote(
+      rawMainPair.translation,
+    );
+    final mainPair = rawMainPair.copyWith(translation: translation);
 
     final word = Word(
       mainPair,
       extraPairs: extra.isNotEmpty ? extra : null,
       originalExample: enExample,
+      note: note,
       translationExample: ruExample,
       irregularVerb: _getIrregularVerb(),
       pronunciationAudio: _getPronunciationAudio(),
@@ -62,6 +67,10 @@ class FileParser {
           .map((match) => WordPair(match.group(1)!, match.group(2)!))
           .toList();
 
+  /// Returns the transcript of the word.
+  ///
+  /// Example:
+  /// '`acquisition [ˌæk.wɪˈzɪʃ.ən]`' -> 'ˌæk.wɪˈzɪʃ.ən'
   String? _getTranscript() => RegExp(
     r'^`.*?(?: \[(.*)])?`',
     multiLine: true,
@@ -80,7 +89,15 @@ class FileParser {
         : IrregularVerb(result[1]!, result[2]!, result[3]!);
   }
 
-  (String?, String?) _getExample() {
+  /// Returns the example on original and translated languages.
+  ///
+  /// Example:
+  /// ```md
+  /// It was a great acquisition
+  /// (Это было отличное приобретение)
+  /// ```
+  /// -> 'It was a great acquisition', 'Это было отличное приобретение'
+  (String?, String?) _getExamples() {
     final lines = _splitContentByLines(_content);
 
     final ruMatch = RegExp(r'^\((.+)\)$', multiLine: true).firstMatch(_content);
@@ -93,19 +110,28 @@ class FileParser {
   }
 
   Uint8List? _getPronunciationAudio() {
-    final captures = RegExp(r'!\[\[(.+?)\.mp3]]').allMatches(_content).toList();
-    if (captures.isEmpty) return null;
-
-    final audioFile = File(
-      'D:/Programs/Obsidian/data/Мой камень/Кэш/слова/${captures.first.group(1)}.mp3',
-    );
+    final word = p.basenameWithoutExtension(file.path).toLowerCase();
+    final audioFile = File('$audioFolder$word.mp3');
+    print(audioFile.path);
 
     return audioFile.existsSync() ? audioFile.readAsBytesSync() : null;
   }
 
+  /// Splits the content by lines, removing empty lines and trimming whitespace.
   List<String> _splitContentByLines(String content) => content
       .split('\n')
       .map((line) => line.trim())
       .where((line) => line.isNotEmpty)
       .toList();
+
+  /// Separates the translation from the note.
+  ///
+  /// Example: 'book (как существильное)' -> 'book', 'как существильное'
+  (String?, String?) _separateTranslationAndNote(String? translationWithNote) {
+    if (translationWithNote == null) return (null, null);
+    final res = RegExp(r'(.*) \((.*)\)').firstMatch(translationWithNote);
+    return res != null
+        ? (res.group(1), res.group(2))
+        : (translationWithNote, null);
+  }
 }

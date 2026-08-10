@@ -1,5 +1,4 @@
 import 'dart:convert' hide json;
-import 'dart:io' show sleep;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:http/http.dart' show get;
@@ -42,6 +41,9 @@ class WordPair {
   @override
   String toString() => '$original - $translation';
 
+  WordPair copyWith({String? original, String? translation}) =>
+      WordPair(original ?? this.original, translation ?? this.translation);
+
   bool get isFull => original.isNotEmpty && (translation?.isNotEmpty ?? false);
 
   Map<String, dynamic> toMap() => {
@@ -69,12 +71,13 @@ class Word {
   final String? originalExample, translationExample;
   final IrregularVerb? irregularVerb;
   late PartOfSpeech? partOfSpeech;
-  late String? transcription;
+  late String? transcription, note;
   late Uint8List? pronunciationAudio;
 
   Word(
     this.mainPair, {
     this.extraPairs,
+    this.note,
     this.originalExample,
     this.translationExample,
     this.transcription,
@@ -94,23 +97,25 @@ class Word {
 
   factory Word.fromMap(Map<String, dynamic> map) => Word(
     WordPair(map['original'] as String, map['translation'] as String?),
+    note: map['note'] as String?,
     originalExample: map['original_example'] as String?,
     translationExample: map['translation_example'] as String?,
     transcription: map['transcription'] as String?,
     pronunciationAudio: map['pronunciationAudio'] as Uint8List?,
-    partOfSpeech: map['partOfSpeech'] == null
+    partOfSpeech: map['part_of_speech'] == null
         ? null
-        : PartOfSpeech.fromString(map['partOfSpeech'] as String),
+        : PartOfSpeech.fromString(map['part_of_speech'] as String),
   );
 
   Map<String, dynamic> toMap() => {
     'original': mainPair.original,
     'translation': mainPair.translation,
+    'note': note,
     'original_example': originalExample,
     'translation_example': translationExample,
     'trancsription': transcription,
     'pronunciationAudio': pronunciationAudio,
-    'partOfSpeech': partOfSpeech?.name,
+    'part_of_speech': partOfSpeech?.name,
   };
 
   @override
@@ -118,6 +123,7 @@ class Word {
 
   bool get isFull =>
       mainPair.isFull &&
+      note != null &&
       originalExample != null &&
       translationExample != null &&
       transcription != null &&
@@ -129,6 +135,7 @@ class Word {
       identical(this, other) ||
       (other is Word &&
           mainPair == other.mainPair &&
+          note == other.note &&
           originalExample == other.originalExample &&
           translationExample == other.translationExample &&
           transcription == other.transcription &&
@@ -138,6 +145,7 @@ class Word {
   @override
   int get hashCode => Object.hash(
     mainPair,
+    note,
     originalExample,
     translationExample,
     transcription,

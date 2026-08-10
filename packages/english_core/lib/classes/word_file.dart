@@ -4,8 +4,9 @@ import 'package:english_core/ext.dart';
 import 'package:english_core/parsers/file_parser.dart';
 import 'package:path/path.dart' as p;
 
-import 'config.dart' show Config;
 import 'word.dart';
+
+const audioFolder = '../../../Кэш/слова/';
 
 class WordFile {
   final File file;
@@ -23,6 +24,7 @@ class WordFile {
           'en_example': word.originalExample,
           'ru_example': word.translationExample,
           'part_of_speech': word.partOfSpeech?.name,
+          'note': word.note,
           'organize': 'true',
         }
       : {'organize': 'false'};
@@ -54,9 +56,8 @@ class WordFile {
 
   void savePronunciation() {
     if (word.pronunciationAudio != null) {
-      final audioFile = File(
-        '${Config.dictionaryPath}${word.mainPair.original}.mp3',
-      );
+      final audioFile = File('$audioFolder/${word.mainPair.original}.mp3');
+
       audioFile.writeAsBytes(word.pronunciationAudio!);
     } else {
       print('No pronunciation audio to save for ${word.mainPair.original}');
@@ -90,6 +91,7 @@ class WordFile {
     buffer.write('\n`${word.mainPair.original}');
     if (word.transcription != null) buffer.write(' [${word.transcription}]');
     buffer.write('` - ${word.mainPair.translation}');
+    if (word.note != null) buffer.write(' (${word.note})');
 
     // Extra pairs
     for (final WordPair pair in word.extraPairs ?? []) {
