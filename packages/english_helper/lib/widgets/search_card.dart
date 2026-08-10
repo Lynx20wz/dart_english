@@ -92,7 +92,11 @@ class PronunciationCardState extends ConsumerState<PronunciationCard> {
   Widget build(BuildContext context) {
     _isAdded = ref.watch(
       wordsProvider.select(
-        (words) => words.any((word) => word.mainPair.original == widget.word),
+        (asyncWords) =>
+            asyncWords.value?.any(
+              (word) => word.mainPair.original == widget.word,
+            ) ??
+            false,
       ),
     );
 

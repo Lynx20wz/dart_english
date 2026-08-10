@@ -1,11 +1,16 @@
+// Project-local debug tasks
+//
+// For more documentation on how to configure debug tasks,
+// see: https://zed.dev/docs/debugger
 [
   {
-    "label": "Flutter debug",
+    "label": "Debug",
     "adapter": "Dart",
     "type": "flutter",
     "program": "lib/main.dart",
     "platform": "desktop",
     "cwd": "$ZED_WORKTREE_ROOT/packages/english_helper",
     "request": "launch",
+    "useFvm": true
   },
 ]
